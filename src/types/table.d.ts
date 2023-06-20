@@ -2,7 +2,8 @@ interface IterationTableRow {
   id: string;
   title: string;
   user: string;
-  date: string;
+  startTime: string;
+  stopTime: string;
 }
 
 interface ExperimentTableRow {

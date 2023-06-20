@@ -1,23 +1,29 @@
 import React from "react";
 import NewModal from "./NewModal";
 
-interface NewExperimentModalProps {
+interface Props {
   isModalOpen: boolean;
+  experimentTitle: string;
   handleToggleModal: () => void;
   setIsCreateNew: (isCreateNew: boolean) => void;
 }
 
-const NewExperimentModal = ({
+const NewIterationModal = ({
   isModalOpen,
+  experimentTitle,
   handleToggleModal,
   setIsCreateNew,
-}: NewExperimentModalProps) => {
-  const createExperiment = async (title: string, description?: string) => {
+}: Props) => {
+  const createIteration = async (title: string, description?: string) => {
     handleToggleModal();
     try {
-      await fetch(`/api/experiment/create`, {
+      await fetch(`/api/iteration/create`, {
         method: "POST",
-        body: JSON.stringify({ title: title, description: description }),
+        body: JSON.stringify({
+          experimentTitle: experimentTitle,
+          iterationTitle: title,
+          description: description,
+        }),
       });
     } catch (error) {
       console.log(error);
@@ -28,10 +34,10 @@ const NewExperimentModal = ({
     <NewModal
       isModalOpen={isModalOpen}
       handleToggleModal={handleToggleModal}
-      handleCreate={createExperiment}
-      modalTitle={"Add a New Experiment"}
+      handleCreate={createIteration}
+      modalTitle={"Add a New Iteration"}
     />
   );
 };
 
-export default NewExperimentModal;
+export default NewIterationModal;

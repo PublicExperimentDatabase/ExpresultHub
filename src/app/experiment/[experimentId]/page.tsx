@@ -1,39 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import IterationTable from "@/components/IterationTable";
-
-const data = {
-  id: "1",
-  title: "Iteration (a)",
-  rows: [
-    {
-      id: "1",
-      title: "Iteration (a)",
-      user: "Mike Smith",
-      date: "2021-10-10",
-    },
-    {
-      id: "2",
-      title: "Iteration (b)",
-      user: "John Williams",
-      date: "2021-10-11",
-    },
-    {
-      id: "3",
-      title: "Iteration (b)",
-      user: "John Williams",
-      date: "2021-10-11",
-    },
-    {
-      id: "4",
-      title: "Iteration (b)",
-      user: "John Williams",
-      date: "2021-10-11",
-    },
-  ],
-};
+import NewIterationModal from "@/components/NewIterationModal";
 
 interface PageProps {
   params: {
@@ -43,6 +13,54 @@ interface PageProps {
 
 const Page = ({ params }: PageProps) => {
   const { experimentId } = params;
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [iterations, setIterations] = useState<IterationTableRow[]>([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateNew, setIsCreateNew] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
+
+  const handleToggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const handleDelete = () => {
+    setIsDelete(!isDelete);
+  };
+
+  useEffect(() => {
+    const fetchIteration = async () => {
+      try {
+        const response = await fetch(`/api/iteration/get`, {
+          method: "POST",
+          body: JSON.stringify({ experimentId: experimentId }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => res.json());
+
+        const dbIterations = response.iterations;
+        const transformedIterations = dbIterations.map((iteration: any) => {
+          return {
+            id: iteration._id,
+            title: iteration.name,
+            user: iteration.user,
+            startTime: iteration.timestamp.startTime,
+            stopTime: iteration.timestamp.stopTime,
+          };
+        }) as IterationTableRow[];
+
+        setTitle(response.title);
+        setDescription(response.description);
+        setIterations(transformedIterations);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchIteration();
+  }, [isCreateNew, isDelete]);
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
@@ -55,12 +73,24 @@ const Page = ({ params }: PageProps) => {
           color="primary"
           textAlign="left"
         >
-          {data.title}
+          {title}
         </Typography>
       </Box>
       <Box width="100%">
-        <IterationTable experimentId="1" rows={data.rows} />
+        <IterationTable
+          experimentId={experimentId}
+          rows={iterations}
+          handleDelete={handleDelete}
+          handleToggleModal={handleToggleModal}
+        />
       </Box>
+
+      <NewIterationModal
+        isModalOpen={isModalOpen}
+        experimentTitle={title}
+        handleToggleModal={handleToggleModal}
+        setIsCreateNew={setIsCreateNew}
+      />
     </Box>
   );
 };

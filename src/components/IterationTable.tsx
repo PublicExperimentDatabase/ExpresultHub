@@ -1,12 +1,15 @@
 import * as React from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import IterationTableToolbar from "./IterationTableToolbar";
 
 interface Props {
   experimentId: string;
   rows: IterationTableRow[];
+  handleDelete: () => void;
+  handleToggleModal: () => void;
 }
 
-const IterationTable = ({ experimentId, rows }: Props) => {
+const IterationTable = ({ experimentId, rows, handleDelete, handleToggleModal }: Props) => {
   const columns: GridColDef[] = [
     {
       field: "title",
@@ -22,27 +25,37 @@ const IterationTable = ({ experimentId, rows }: Props) => {
       },
     },
     { field: "user", headerName: "User", flex: 1, sortable: false },
-    { field: "date", headerName: "Date", flex: 1 },
+    { field: "startTime", headerName: "Start Time", flex: 1 },
+    { field: "stopTime", headerName: "Stop Time", flex: 1 },
   ];
+
+  const [rowsSelctedIds, setRowsSelectedIds] = React.useState<String[]>([]);
 
   return (
     <div style={{ width: "100%" }}>
-      {rows.length > 2 ? (
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
-          getRowId={(row: any) => row.id}
-        />
-      ) : (
-        <DataGrid rows={rows} columns={columns} hideFooter={true} getRowId={(row: any) => row.id} />
-      )}
+      <IterationTableToolbar
+        handleDelete={handleDelete}
+        experimentId={experimentId}
+        rowsSelctedIds={rowsSelctedIds}
+        // handleDelete={handleDelete}
+        handleToggleModal={handleToggleModal}
+      />
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
+        checkboxSelection
+        onRowSelectionModelChange={(ids) => {
+          const selectedIds = ids.map((id) => String(id));
+          setRowsSelectedIds(selectedIds);
+        }}
+        getRowId={(row: any) => row.id}
+      />
     </div>
   );
 };

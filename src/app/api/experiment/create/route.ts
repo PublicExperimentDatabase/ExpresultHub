@@ -11,6 +11,7 @@ export async function POST(req: Request, res: Response) {
     .parse(body);
 
   await dbConnect();
+
   // Check if an experiment with the same name already exists
   const existingExperiment = await Experiment.findOne({ title });
   if (existingExperiment) {
