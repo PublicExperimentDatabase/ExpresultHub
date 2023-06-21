@@ -31,6 +31,8 @@ const Page = ({ params }: PageProps) => {
 
   useEffect(() => {
     const fetchIteration = async () => {
+      isCreateNew && setIsCreateNew(false);
+      isDelete && setIsDelete(false);
       try {
         const response = await fetch(`/api/iteration/get`, {
           method: "POST",

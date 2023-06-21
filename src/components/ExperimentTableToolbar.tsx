@@ -1,6 +1,5 @@
-import { Button, IconButton, Toolbar, Tooltip, Typography, alpha } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
+import TableToolbar from "./TableToolbar";
 
 interface Props {
   rowsSelctedIds: String[];
@@ -19,43 +18,14 @@ const ExperimentTableToolbar = ({ rowsSelctedIds, handleDelete, handleToggleModa
   };
 
   return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(rowsSelctedIds.length > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
-      {rowsSelctedIds.length > 0 ? (
-        <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
-          {rowsSelctedIds.length} selected
-        </Typography>
-      ) : (
-        <Typography sx={{ flex: "1 1 100%" }} variant="h6" id="tableTitle" component="div">
-          All Experiments
-        </Typography>
-      )}
-      {rowsSelctedIds.length > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton onClick={deleteSelected}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Add a new experiment">
-          <Button
-            onClick={() => handleToggleModal()}
-            variant="contained"
-            sx={{ width: "20%", height: "100%" }}
-          >
-            New Experiment
-          </Button>
-        </Tooltip>
-      )}
-    </Toolbar>
+    <TableToolbar
+      rowsSelctedIds={rowsSelctedIds}
+      handleDelete={handleDelete}
+      handleToggleModal={handleToggleModal}
+      delteSelected={deleteSelected}
+      tableTitle={"All Experiments"}
+      addButtonTitle={"New Experiment"}
+    />
   );
 };
 
