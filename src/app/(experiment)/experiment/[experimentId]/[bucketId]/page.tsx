@@ -2,17 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import IterationTable from "@/components/IterationTable";
-import NewIterationModal from "@/components/NewIterationModal";
+import IterationTable from "@/components/Iteration/IterationTable";
+import NewIterationModal from "@/components/Iteration/NewIterationModal";
 
 interface PageProps {
   params: {
     experimentId: string;
+    bucketId: string;
   };
 }
 
 const Page = ({ params }: PageProps) => {
-  const { experimentId } = params;
+  const { experimentId, bucketId } = params;
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [iterations, setIterations] = useState<IterationTableRow[]>([]);
@@ -36,7 +37,7 @@ const Page = ({ params }: PageProps) => {
       try {
         const response = await fetch(`/api/iteration/get`, {
           method: "POST",
-          body: JSON.stringify({ experimentId: experimentId }),
+          body: JSON.stringify({ experimentId: experimentId, bucketId: bucketId }),
           headers: {
             "Content-Type": "application/json",
           },
@@ -46,8 +47,7 @@ const Page = ({ params }: PageProps) => {
         const transformedIterations = dbIterations.map((iteration: any) => {
           return {
             id: iteration._id,
-            title: iteration.name,
-            user: iteration.user,
+            title: iteration.title,
             startTime: iteration.timestamp.startTime,
             stopTime: iteration.timestamp.stopTime,
           };
@@ -81,18 +81,20 @@ const Page = ({ params }: PageProps) => {
       <Box width="100%">
         <IterationTable
           experimentId={experimentId}
+          bucketId={bucketId}
           rows={iterations}
           handleDelete={handleDelete}
           handleToggleModal={handleToggleModal}
         />
       </Box>
 
-      <NewIterationModal
+      {/* <NewIterationModal
         isModalOpen={isModalOpen}
         experimentTitle={title}
+        bucketTitle={title}
         handleToggleModal={handleToggleModal}
         setIsCreateNew={setIsCreateNew}
-      />
+      /> */}
     </Box>
   );
 };

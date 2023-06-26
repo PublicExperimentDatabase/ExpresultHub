@@ -6,6 +6,13 @@ interface IterationTableRow {
   stopTime: string;
 }
 
+interface BucketTableRow {
+  id: string;
+  title: string;
+  lastModified: string;
+  created: string;
+}
+
 interface ExperimentTableRow {
   id: string;
   title: string;

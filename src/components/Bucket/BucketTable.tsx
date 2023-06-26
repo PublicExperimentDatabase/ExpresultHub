@@ -1,15 +1,15 @@
 import * as React from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import IterationTableToolbar from "./IterationTableToolbar";
+import BucketTableToolbar from "./BucketTableToolbar";
 
 interface Props {
   experimentId: string;
-  rows: IterationTableRow[];
+  rows: BucketTableRow[];
   handleDelete: () => void;
   handleToggleModal: () => void;
 }
 
-const IterationTable = ({ experimentId, rows, handleDelete, handleToggleModal }: Props) => {
+const BucketTable = ({ experimentId, rows, handleDelete, handleToggleModal }: Props) => {
   const columns: GridColDef[] = [
     {
       field: "title",
@@ -24,20 +24,28 @@ const IterationTable = ({ experimentId, rows, handleDelete, handleToggleModal }:
         );
       },
     },
-    { field: "user", headerName: "User", flex: 1, sortable: false },
-    { field: "startTime", headerName: "Start Time", flex: 1 },
-    { field: "stopTime", headerName: "Stop Time", flex: 1 },
+    {
+      field: "lastModified",
+      headerName: "Last Modified",
+      flex: 1,
+      valueFormatter: (params) => params.value.slice(0, 10),
+    },
+    {
+      field: "createdAt",
+      headerName: "Created",
+      flex: 1,
+      valueFormatter: (params) => params.value.slice(0, 10),
+    },
   ];
 
   const [rowsSelctedIds, setRowsSelectedIds] = React.useState<String[]>([]);
 
   return (
     <div style={{ width: "100%" }}>
-      <IterationTableToolbar
+      <BucketTableToolbar
         handleDelete={handleDelete}
         experimentId={experimentId}
         rowsSelctedIds={rowsSelctedIds}
-        // handleDelete={handleDelete}
         handleToggleModal={handleToggleModal}
       />
       <DataGrid
@@ -46,6 +54,9 @@ const IterationTable = ({ experimentId, rows, handleDelete, handleToggleModal }:
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
+          },
+          sorting: {
+            sortModel: [{ field: "lastModified", sort: "desc" }],
           },
         }}
         pageSizeOptions={[5, 10]}
@@ -60,4 +71,4 @@ const IterationTable = ({ experimentId, rows, handleDelete, handleToggleModal }:
   );
 };
 
-export default IterationTable;
+export default BucketTable;

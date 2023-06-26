@@ -1,5 +1,5 @@
 import React from "react";
-import NewModal from "./NewModal";
+import NewModal from "../NewModal";
 
 interface NewExperimentModalProps {
   isModalOpen: boolean;

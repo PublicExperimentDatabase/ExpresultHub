@@ -1,23 +1,37 @@
 import osUtils from "os-utils";
 import dbConnect from "./dbConnect";
 import { Experiment } from "../types/database/Experiment";
-import os from "os";
 
 const experimentTitle = process.argv[2];
-const iterationTitle = process.argv[3];
-const interval = parseInt(process.argv[4]);
+const bucketTitle = process.argv[3];
+const iterationTitle = process.argv[4];
+const interval = parseInt(process.argv[5]);
 
-async function getIterationDatabase(experimentTitle: string, iterationTitle: string) {
+async function getIterationDatabase(
+  experimentTitle: string,
+  bucketTitle: string,
+  iterationTitle: string
+) {
   await dbConnect();
-  const existingExperiment = await Experiment.findOne({ title: experimentTitle });
-  const existingIteration = existingExperiment.iterations.find(
-    (iteration: any) => iteration.name === iterationTitle
+  const existingIteration = await Experiment.findOne(
+    {
+      title: experimentTitle,
+      "buckets.title": bucketTitle,
+      "buckets.iterations.title": iterationTitle,
+    },
+    { "buckets.$": 1 }
+  ).then((experiment: any) =>
+    experiment.buckets[0].iterations.find((iteration: any) => iteration.title === iterationTitle)
   );
-  return { existingExperiment, existingIteration };
+  return { existingIteration };
 }
 
 async function monitor() {
-  let { existingIteration } = await getIterationDatabase(experimentTitle, iterationTitle);
+  let { existingIteration } = await getIterationDatabase(
+    experimentTitle,
+    bucketTitle,
+    iterationTitle
+  );
 
   if (!existingIteration) {
     console.log("No iteration found");
@@ -44,20 +58,34 @@ async function monitor() {
       timestamp: new Date(),
       val: cpuUsage,
     });
-    existingIteration.timestamp.endTime = new Date();
+    existingIteration.timestamp.stopTime = new Date();
 
     try {
       const updatedExperiment = await Experiment.findOneAndUpdate(
-        { title: experimentTitle },
+        {
+          title: experimentTitle,
+          "buckets.title": bucketTitle,
+          "buckets.iterations.title": iterationTitle,
+        },
         {
           $set: {
-            "iterations.$[elem].output": existingIteration.output,
-            "iterations.$[elem].timestamp": existingIteration.timestamp,
+            "buckets.$[bucketElem].iterations.$[iterationElem].output": existingIteration.output,
+            "buckets.$[bucketElem].iterations.$[iterationElem].timestamp":
+              existingIteration.timestamp,
           },
         },
-        { arrayFilters: [{ "elem.name": iterationTitle }], new: true }
+        {
+          arrayFilters: [
+            { "bucketElem.title": bucketTitle },
+            { "iterationElem.title": iterationTitle },
+          ],
+          new: true,
+        }
       );
-      console.log(updatedExperiment.iterations[0].output.EnvironmentData[0].record);
+      console.log(
+        updatedExperiment.buckets[0].iterations[parseInt(iterationTitle)].output.EnvironmentData[0]
+          .record
+      );
     } catch (error) {
       console.error("Error saving experiment:", error);
     }

@@ -2,18 +2,13 @@ import mongoose from "mongoose";
 import { environmentDataSchema } from "./EnvironmentData";
 
 export const iterationSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
     required: true,
   },
   description: {
     type: String,
-    required: false,
   },
-  // user: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "Member",
-  // },
   timestamp: {
     startTime: {
       type: Date,

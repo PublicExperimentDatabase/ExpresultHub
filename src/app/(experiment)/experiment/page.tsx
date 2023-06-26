@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import ExperimentTable from "@/components/ExperimentTable";
-import NewExperimentModal from "@/components/NewExperimentModal";
+import ExperimentTable from "@/components/Experiment/ExperimentTable";
+import NewExperimentModal from "@/components/Experiment/NewExperimentModal";
 
 const Page = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);

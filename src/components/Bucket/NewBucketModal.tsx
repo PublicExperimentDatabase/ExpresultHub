@@ -1,5 +1,5 @@
 import React from "react";
-import NewModal from "./NewModal";
+import NewModal from "../NewModal";
 
 interface Props {
   isModalOpen: boolean;
@@ -8,7 +8,7 @@ interface Props {
   setIsCreateNew: (isCreateNew: boolean) => void;
 }
 
-const NewIterationModal = ({
+const NewBucketModal = ({
   isModalOpen,
   experimentTitle,
   handleToggleModal,
@@ -17,11 +17,11 @@ const NewIterationModal = ({
   const createIteration = async (title: string, description?: string) => {
     handleToggleModal();
     try {
-      await fetch(`/api/iteration/create`, {
+      await fetch(`/api/bucket/create`, {
         method: "POST",
         body: JSON.stringify({
           experimentTitle: experimentTitle,
-          iterationTitle: title,
+          bucketTitle: title,
           description: description,
         }),
       });
@@ -40,4 +40,4 @@ const NewIterationModal = ({
   );
 };
 
-export default NewIterationModal;
+export default NewBucketModal;

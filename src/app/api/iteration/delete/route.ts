@@ -4,33 +4,36 @@ import { z } from "zod";
 
 export async function POST(req: Request, res: Response) {
   const body = await req.json();
-  const { experimentId, iterationIds } = z
+  const { experimentId, bucketId, iterationIds } = z
     .object({
       experimentId: z.string(),
+      bucketId: z.string(),
       iterationIds: z.array(z.string()),
     })
     .parse(body);
 
+  console.log(experimentId, bucketId, iterationIds);
+
   await dbConnect();
   try {
-    const existingExperiment = await Experiment.findOne({ _id: experimentId });
-    if (!existingExperiment) {
-      console.log("Threre is no experiment with this name");
-      return new Response(
-        JSON.stringify({
-          message: "Threre is no experiment with this name",
-        }),
-        {
-          status: 400,
-        }
-      );
-    }
-
-    existingExperiment.iterations = existingExperiment.iterations.filter((iteration: any) => {
-      return !iterationIds.includes(iteration._id.toString());
-    });
-
-    await existingExperiment.save();
+    const updatedExperiment = await Experiment.findOneAndUpdate(
+      {
+        _id: experimentId,
+        "buckets._id": bucketId,
+      },
+      {
+        $pull: {
+          "buckets.$[bucketElem].iterations": {
+            _id: { $in: iterationIds },
+          },
+        },
+      },
+      {
+        arrayFilters: [{ "bucketElem._id": bucketId }],
+        new: true,
+      }
+    ).then((experiment: any) => experiment);
+    console.log(updatedExperiment);
 
     return new Response(
       JSON.stringify({

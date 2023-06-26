@@ -5,30 +5,34 @@ import { z } from "zod";
 export async function POST(req: Request, res: Response) {
   const body = await req.json();
 
-  const { experimentId, bucketId } = z
+  const { experimentId } = z
     .object({
       experimentId: z.string(),
-      bucketId: z.string(),
     })
     .parse(body);
 
   await dbConnect();
 
   try {
-    const existingBucket = await Experiment.findOne(
-      {
-        _id: experimentId,
-        "buckets._id": bucketId,
-      },
-      { "buckets.$": 1 }
-    ).then((experiment: any) => experiment.buckets[0]);
+    const existingExperiment = await Experiment.findOne({ _id: experimentId });
+    if (!existingExperiment) {
+      console.log("Threre is no experiment with this name");
+      return new Response(
+        JSON.stringify({
+          message: "Threre is no experiment with this name",
+        }),
+        {
+          status: 400,
+        }
+      );
+    }
 
     return new Response(
       JSON.stringify({
-        message: "Iterations found",
-        title: existingBucket.title,
-        description: existingBucket.description,
-        iterations: existingBucket.iterations,
+        message: "Buckets found",
+        title: existingExperiment.title,
+        description: existingExperiment.description,
+        buckets: existingExperiment.buckets,
       }),
       {
         status: 200,

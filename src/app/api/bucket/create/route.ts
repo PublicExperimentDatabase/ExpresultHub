@@ -6,11 +6,10 @@ import fs from "fs";
 export async function POST(req: Request, res: Response) {
   const body = await req.json();
 
-  const { experimentTitle, bucketTitle, iterationTitle, description } = z
+  const { experimentTitle, bucketTitle, description } = z
     .object({
       experimentTitle: z.string(),
       bucketTitle: z.string(),
-      iterationTitle: z.string(),
       description: z.string().nullish(),
     })
     .parse(body);
@@ -31,33 +30,16 @@ export async function POST(req: Request, res: Response) {
     );
   }
 
-  // Check if there is a bucket with the same name in this experiment
+  // Check if an iteration with the same name already exists in this experiment
   const existingBucket = existingExperiment.buckets.find(
     (bucket: any) => bucket.title === bucketTitle
   );
 
-  if (!existingBucket) {
-    console.log("Threre is no bucket with this name in this experiment");
+  if (existingBucket) {
+    console.log("Bucket with the same name already exists");
     return new Response(
       JSON.stringify({
-        message: "Threre is no bucket with this name in this experiment",
-      }),
-      {
-        status: 400,
-      }
-    );
-  }
-
-  // Check if an iteration with the same name already exists in this experiment
-  const existingIteration = existingBucket.iterations.find(
-    (iteration: any) => iteration.title === iterationTitle
-  );
-
-  if (existingIteration) {
-    console.log("Iteration with the same name already exists");
-    return new Response(
-      JSON.stringify({
-        message: "Iteration with the same name already exists",
+        message: "Bucket with the same name already exists",
       }),
       {
         status: 409,
@@ -67,7 +49,7 @@ export async function POST(req: Request, res: Response) {
 
   // // create folder for iteration
   // fs.mkdir(
-  //   `${process.env.Local_Path}/${experimentTitle}/${iterationTitle}`,
+  //   `${process.env.Local_Path}/${experimentTitle}/${bucketTitle}`,
   //   { recursive: true },
   //   (err) => {
   //     if (err) {
@@ -77,16 +59,19 @@ export async function POST(req: Request, res: Response) {
   // );
 
   try {
-    const newIteration = {
-      title: iterationTitle,
+    const newBucket = {
+      title: bucketTitle,
       description: description,
+      iterations: [],
+      lastModified: new Date(),
+      created: new Date(),
     };
-    existingBucket.iterations.push(newIteration);
+    existingExperiment.buckets.push(newBucket);
     await existingExperiment.save();
     return new Response(
       JSON.stringify({
-        message: "Iteration created",
-        iteration: newIteration,
+        message: "Bucket created",
+        bucket: newBucket,
       }),
       {
         status: 200,
@@ -95,7 +80,7 @@ export async function POST(req: Request, res: Response) {
   } catch (error) {
     return new Response(
       JSON.stringify({
-        message: "Error creating iteration",
+        message: "Error creating Bucket",
       }),
       {
         status: 500,
