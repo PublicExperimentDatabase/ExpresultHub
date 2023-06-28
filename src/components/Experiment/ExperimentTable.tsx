@@ -11,39 +11,39 @@ interface Props {
 
 const columns: GridColDef[] = [
   {
-    field: "title",
-    headerName: "Title",
+    field: "name",
+    headerName: "Name",
     flex: 4,
     sortable: false,
     renderCell: (params) => {
       return (
-        <a href={`/experiment/${params.row.id}`} style={{ color: "blue" }}>
+        <a href={`/experiments/${params.row.name}`} style={{ color: "blue" }}>
           {params.value}
         </a>
       );
     },
   },
-  { field: "owner", headerName: "Owner", flex: 1, sortable: false },
   {
     field: "lastModified",
     headerName: "Last Modified",
     flex: 1,
-    valueFormatter: (params) => params.value.slice(0, 10),
+    valueFormatter: (params) => params.value?.slice(0, 10),
   },
   {
     field: "created",
     headerName: "Created",
     flex: 1,
-    valueFormatter: (params) => params.value.slice(0, 10),
+    valueFormatter: (params) => params.value?.slice(0, 10),
   },
 ];
 
 const ExperimentTable = ({ rows, handleDelete, handleToggleModal }: Props) => {
-  const [rowsSelctedIds, setRowsSelectedIds] = React.useState<String[]>([]);
+  console.log(rows);
+  const [rowsSelectedNames, setRowsSelectedNames] = React.useState<String[]>([]);
   return (
     <div style={{ width: "100%" }}>
       <ExperimentTableToolbar
-        rowsSelctedIds={rowsSelctedIds}
+        rowsSelectedNames={rowsSelectedNames}
         handleDelete={handleDelete}
         handleToggleModal={handleToggleModal}
       />
@@ -60,11 +60,10 @@ const ExperimentTable = ({ rows, handleDelete, handleToggleModal }: Props) => {
         }}
         pageSizeOptions={[5, 10]}
         checkboxSelection
-        onRowSelectionModelChange={(ids) => {
-          const selectedIds = ids.map((id) => String(id));
-          setRowsSelectedIds(selectedIds);
+        onRowSelectionModelChange={(names) => {
+          setRowsSelectedNames(names.map((name) => String(name)));
         }}
-        getRowId={(row: any) => row.id}
+        getRowId={(row: any) => row.name}
       />
     </div>
   );

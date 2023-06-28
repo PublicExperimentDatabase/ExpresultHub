@@ -2,36 +2,32 @@ import osUtils from "os-utils";
 import dbConnect from "./dbConnect";
 import { Experiment } from "../types/database/Experiment";
 
-const experimentTitle = process.argv[2];
-const bucketTitle = process.argv[3];
-const iterationTitle = process.argv[4];
+const experimentName = process.argv[2];
+const bucketName = process.argv[3];
+const iterationName = process.argv[4];
 const interval = parseInt(process.argv[5]);
 
 async function getIterationDatabase(
-  experimentTitle: string,
-  bucketTitle: string,
-  iterationTitle: string
+  experimentName: string,
+  bucketName: string,
+  iterationName: string
 ) {
   await dbConnect();
   const existingIteration = await Experiment.findOne(
     {
-      title: experimentTitle,
-      "buckets.title": bucketTitle,
-      "buckets.iterations.title": iterationTitle,
+      name: experimentName,
+      "buckets.name": bucketName,
+      "buckets.iterations.name": iterationName,
     },
     { "buckets.$": 1 }
   ).then((experiment: any) =>
-    experiment.buckets[0].iterations.find((iteration: any) => iteration.title === iterationTitle)
+    experiment.buckets[0].iterations.find((iteration: any) => iteration.name === iterationName)
   );
   return { existingIteration };
 }
 
 async function monitor() {
-  let { existingIteration } = await getIterationDatabase(
-    experimentTitle,
-    bucketTitle,
-    iterationTitle
-  );
+  let { existingIteration } = await getIterationDatabase(experimentName, bucketName, iterationName);
 
   if (!existingIteration) {
     console.log("No iteration found");
@@ -63,9 +59,9 @@ async function monitor() {
     try {
       const updatedExperiment = await Experiment.findOneAndUpdate(
         {
-          title: experimentTitle,
-          "buckets.title": bucketTitle,
-          "buckets.iterations.title": iterationTitle,
+          name: experimentName,
+          "buckets.name": bucketName,
+          "buckets.iterations.name": iterationName,
         },
         {
           $set: {
@@ -76,14 +72,14 @@ async function monitor() {
         },
         {
           arrayFilters: [
-            { "bucketElem.title": bucketTitle },
-            { "iterationElem.title": iterationTitle },
+            { "bucketElem.name": bucketName },
+            { "iterationElem.name": iterationName },
           ],
           new: true,
         }
       );
       console.log(
-        updatedExperiment.buckets[0].iterations[parseInt(iterationTitle)].output.EnvironmentData[0]
+        updatedExperiment.buckets[0].iterations[parseInt(iterationName)].output.EnvironmentData[0]
           .record
       );
     } catch (error) {

@@ -3,22 +3,22 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import BucketTableToolbar from "./BucketTableToolbar";
 
 interface Props {
-  experimentId: string;
+  experimentName: string;
   rows: BucketTableRow[];
   handleDelete: () => void;
   handleToggleModal: () => void;
 }
 
-const BucketTable = ({ experimentId, rows, handleDelete, handleToggleModal }: Props) => {
+const BucketTable = ({ experimentName, rows, handleDelete, handleToggleModal }: Props) => {
   const columns: GridColDef[] = [
     {
-      field: "title",
-      headerName: "Title",
+      field: "name",
+      headerName: "Name",
       flex: 4,
       sortable: false,
       renderCell: (params) => {
         return (
-          <a href={`/experiment/${experimentId}/${params.row.id}`} style={{ color: "blue" }}>
+          <a href={`/experiments/${experimentName}/${params.row.name}`} style={{ color: "blue" }}>
             {params.value}
           </a>
         );
@@ -28,24 +28,24 @@ const BucketTable = ({ experimentId, rows, handleDelete, handleToggleModal }: Pr
       field: "lastModified",
       headerName: "Last Modified",
       flex: 1,
-      valueFormatter: (params) => params.value.slice(0, 10),
+      valueFormatter: (params) => params.value?.slice(0, 10),
     },
     {
       field: "createdAt",
       headerName: "Created",
       flex: 1,
-      valueFormatter: (params) => params.value.slice(0, 10),
+      valueFormatter: (params) => params.value?.slice(0, 10),
     },
   ];
 
-  const [rowsSelctedIds, setRowsSelectedIds] = React.useState<String[]>([]);
+  const [rowsSelectedNames, setRowsSelectedNames] = React.useState<String[]>([]);
 
   return (
     <div style={{ width: "100%" }}>
       <BucketTableToolbar
         handleDelete={handleDelete}
-        experimentId={experimentId}
-        rowsSelctedIds={rowsSelctedIds}
+        experimentName={experimentName}
+        rowsSelectedNames={rowsSelectedNames}
         handleToggleModal={handleToggleModal}
       />
       <DataGrid
@@ -61,11 +61,10 @@ const BucketTable = ({ experimentId, rows, handleDelete, handleToggleModal }: Pr
         }}
         pageSizeOptions={[5, 10]}
         checkboxSelection
-        onRowSelectionModelChange={(ids) => {
-          const selectedIds = ids.map((id) => String(id));
-          setRowsSelectedIds(selectedIds);
+        onRowSelectionModelChange={(names) => {
+          setRowsSelectedNames(names.map((name) => String(name)));
         }}
-        getRowId={(row: any) => row.id}
+        getRowId={(row: any) => row.name}
       />
     </div>
   );

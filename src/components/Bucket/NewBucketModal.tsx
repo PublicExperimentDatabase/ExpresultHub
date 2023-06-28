@@ -3,25 +3,25 @@ import NewModal from "../NewModal";
 
 interface Props {
   isModalOpen: boolean;
-  experimentTitle: string;
+  experimentName: string;
   handleToggleModal: () => void;
   setIsCreateNew: (isCreateNew: boolean) => void;
 }
 
 const NewBucketModal = ({
   isModalOpen,
-  experimentTitle,
+  experimentName,
   handleToggleModal,
   setIsCreateNew,
 }: Props) => {
-  const createIteration = async (title: string, description?: string) => {
+  const createIteration = async (name: string, description?: string) => {
     handleToggleModal();
+    console.log(name);
     try {
-      await fetch(`/api/bucket/create`, {
+      await fetch(`/api/experiments/${experimentName}/buckets`, {
         method: "POST",
         body: JSON.stringify({
-          experimentTitle: experimentTitle,
-          bucketTitle: title,
+          bucketName: name,
           description: description,
         }),
       });

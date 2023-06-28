@@ -3,7 +3,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
 
 interface Props {
-  rowsSelctedIds: String[];
+  rowsSelectedNames: String[];
   handleDelete: () => void;
   handleToggleModal: () => void;
   delteSelected: () => void;
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const TableToolbar = ({
-  rowsSelctedIds,
+  rowsSelectedNames,
   handleDelete,
   handleToggleModal,
   delteSelected,
@@ -24,22 +24,22 @@ const TableToolbar = ({
       sx={{
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
-        ...(rowsSelctedIds.length > 0 && {
+        ...(rowsSelectedNames.length > 0 && {
           bgcolor: (theme) =>
             alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
         }),
       }}
     >
-      {rowsSelctedIds.length > 0 ? (
+      {rowsSelectedNames.length > 0 ? (
         <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
-          {rowsSelctedIds.length} selected
+          {rowsSelectedNames.length} selected
         </Typography>
       ) : (
         <Typography sx={{ flex: "1 1 100%" }} variant="h6" id="tableTitle" component="div">
           {tableTitle}
         </Typography>
       )}
-      {rowsSelctedIds.length > 0 ? (
+      {rowsSelectedNames.length > 0 ? (
         <Tooltip title="Delete">
           <IconButton
             onClick={() => {

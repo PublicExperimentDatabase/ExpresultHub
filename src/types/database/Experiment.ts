@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { iterationSchema } from "./Iteration";
 
 const bucketSchema = new mongoose.Schema({
-  title: {
+  name: {
     type: String,
     required: true,
   },
@@ -23,7 +23,7 @@ const bucketSchema = new mongoose.Schema({
 });
 
 const experimentSchema = new mongoose.Schema({
-  title: {
+  name: {
     type: String,
     required: true,
   },

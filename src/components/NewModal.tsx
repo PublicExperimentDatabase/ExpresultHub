@@ -4,12 +4,12 @@ import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 interface Props {
   isModalOpen: boolean;
   handleToggleModal: () => void;
-  handleCreate: (title: string, description?: string) => void;
+  handleCreate: (name: string, description?: string) => void;
   modalTitle: string;
 }
 
 const NewModal = ({ isModalOpen, handleToggleModal, handleCreate, modalTitle }: Props) => {
-  const [title, setTitle] = useState<string>();
+  const [name, setName] = useState<string>();
   const [description, setDescription] = useState<string>();
 
   return (
@@ -39,7 +39,7 @@ const NewModal = ({ isModalOpen, handleToggleModal, handleCreate, modalTitle }: 
               placeholder="Title"
               fullWidth
               sx={{ margin: 1 }}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
             <TextField
               variant="outlined"
@@ -55,7 +55,7 @@ const NewModal = ({ isModalOpen, handleToggleModal, handleCreate, modalTitle }: 
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  title && handleCreate(title, description);
+                  name && handleCreate(name, description);
                 }}
                 sx={{ marginX: 2 }}
               >

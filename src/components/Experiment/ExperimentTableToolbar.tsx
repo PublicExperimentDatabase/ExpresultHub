@@ -2,24 +2,24 @@ import React from "react";
 import TableToolbar from "../TableToolbar";
 
 interface Props {
-  rowsSelctedIds: String[];
+  rowsSelectedNames: String[];
   handleDelete: () => void;
   handleToggleModal: () => void;
 }
 
-const ExperimentTableToolbar = ({ rowsSelctedIds, handleDelete, handleToggleModal }: Props) => {
+const ExperimentTableToolbar = ({ rowsSelectedNames, handleDelete, handleToggleModal }: Props) => {
   const deleteSelected = async () => {
     handleDelete();
-    await fetch(`/api/experiment/delete`, {
-      method: "POST",
+    await fetch(`/api/experiments`, {
+      method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids: rowsSelctedIds }),
+      body: JSON.stringify({ names: rowsSelectedNames }),
     });
   };
 
   return (
     <TableToolbar
-      rowsSelctedIds={rowsSelctedIds}
+      rowsSelectedNames={rowsSelectedNames}
       handleDelete={handleDelete}
       handleToggleModal={handleToggleModal}
       delteSelected={deleteSelected}

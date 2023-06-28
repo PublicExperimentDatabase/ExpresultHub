@@ -2,30 +2,30 @@ import React from "react";
 import TableToolbar from "../TableToolbar";
 
 interface Props {
-  experimentId: string;
-  rowsSelctedIds: String[];
+  experimentName: string;
+  rowsSelectedNames: String[];
   handleDelete: () => void;
   handleToggleModal: () => void;
 }
 
 const BucketTableToolbar = ({
-  experimentId,
-  rowsSelctedIds,
+  experimentName,
+  rowsSelectedNames,
   handleDelete,
   handleToggleModal,
 }: Props) => {
   const deleteSelected = async () => {
     handleDelete();
-    await fetch(`/api/bucket/delete`, {
-      method: "POST",
+    await fetch(`/api/experiments/${experimentName}/buckets`, {
+      method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bucketIds: rowsSelctedIds, experimentId: experimentId }),
+      body: JSON.stringify({ bucketNames: rowsSelectedNames }),
     });
   };
 
   return (
     <TableToolbar
-      rowsSelctedIds={rowsSelctedIds}
+      rowsSelectedNames={rowsSelectedNames}
       handleDelete={handleDelete}
       handleToggleModal={handleToggleModal}
       delteSelected={deleteSelected}

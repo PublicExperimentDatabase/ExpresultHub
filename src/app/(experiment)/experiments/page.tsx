@@ -24,7 +24,7 @@ const Page = () => {
       isCreateNew && setIsCreateNew(false);
       isDelete && setIsDelete(false);
       try {
-        const dbExperiments = await fetch(`/api/experiment/get`, {
+        const dbExperiments = await fetch(`/api/experiments`, {
           method: "GET",
         })
           .then((res) => res.json())
@@ -32,11 +32,9 @@ const Page = () => {
 
         const transformedExperiments = dbExperiments.map((experiment: any) => {
           return {
-            id: experiment.id,
-            title: experiment.title,
-            owner: experiment.owner,
+            name: experiment.name,
             lastModified: experiment.lastModified,
-            created: experiment.created,
+            created: experiment.createdAt,
           };
         }) as ExperimentTableRow[];
 

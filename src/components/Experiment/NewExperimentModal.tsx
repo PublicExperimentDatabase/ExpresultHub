@@ -12,12 +12,12 @@ const NewExperimentModal = ({
   handleToggleModal,
   setIsCreateNew,
 }: NewExperimentModalProps) => {
-  const createExperiment = async (title: string, description?: string) => {
+  const createExperiment = async (name: string, description?: string) => {
     handleToggleModal();
     try {
-      await fetch(`/api/experiment/create`, {
+      await fetch(`/api/experiments`, {
         method: "POST",
-        body: JSON.stringify({ title: title, description: description }),
+        body: JSON.stringify({ name: name, description: description }),
       });
     } catch (error) {
       console.log(error);

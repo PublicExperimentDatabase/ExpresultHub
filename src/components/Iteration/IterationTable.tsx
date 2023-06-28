@@ -3,29 +3,29 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import IterationTableToolbar from "./IterationTableToolbar";
 
 interface Props {
-  experimentId: string;
-  bucketId: string;
+  experimentName: string;
+  bucketName: string;
   rows: IterationTableRow[];
   handleDelete: () => void;
   handleToggleModal: () => void;
 }
 
 const IterationTable = ({
-  experimentId,
-  bucketId,
+  experimentName,
+  bucketName,
   rows,
   handleDelete,
   handleToggleModal,
 }: Props) => {
   const columns: GridColDef[] = [
     {
-      field: "title",
-      headerName: "Title",
+      field: "name",
+      headerName: "Name",
       flex: 4,
       sortable: false,
       renderCell: (params) => {
         return (
-          <a href={`/experiment/${experimentId}/${params.row.id}`} style={{ color: "blue" }}>
+          <a href={`/experiments/${experimentName}/${params.row.name}`} style={{ color: "blue" }}>
             {params.value}
           </a>
         );
@@ -35,25 +35,25 @@ const IterationTable = ({
       field: "startTime",
       headerName: "Start Time",
       flex: 1,
-      valueFormatter: (params) => params.value.slice(0, 10),
+      valueFormatter: (params) => params.value?.slice(0, 10),
     },
-    // {
-    //   field: "stopTime",
-    //   headerName: "Stop Time",
-    //   flex: 1,
-    //   valueFormatter: (params) => params.value.slice(0, 10),
-    // },
+    {
+      field: "stopTime",
+      headerName: "Stop Time",
+      flex: 1,
+      valueFormatter: (params) => params.value?.slice(0, 10),
+    },
   ];
 
-  const [rowsSelctedIds, setRowsSelectedIds] = React.useState<String[]>([]);
+  const [rowsSelectedNames, setRowsSelectedNames] = React.useState<String[]>([]);
 
   return (
     <div style={{ width: "100%" }}>
       <IterationTableToolbar
         handleDelete={handleDelete}
-        experimentId={experimentId}
-        bucketId={bucketId}
-        rowsSelctedIds={rowsSelctedIds}
+        experimentName={experimentName}
+        bucketName={bucketName}
+        rowsSelectedNames={rowsSelectedNames}
         // handleDelete={handleDelete}
         handleToggleModal={handleToggleModal}
       />
@@ -67,11 +67,10 @@ const IterationTable = ({
         }}
         pageSizeOptions={[5, 10]}
         checkboxSelection
-        onRowSelectionModelChange={(ids) => {
-          const selectedIds = ids.map((id) => String(id));
-          setRowsSelectedIds(selectedIds);
+        onRowSelectionModelChange={(names) => {
+          setRowsSelectedNames(names.map((name) => String(name)));
         }}
-        getRowId={(row: any) => row.id}
+        getRowId={(row: any) => row.name}
       />
     </div>
   );

@@ -1,23 +1,18 @@
 interface IterationTableRow {
-  id: string;
-  title: string;
+  name: string;
   user: string;
   startTime: string;
   stopTime: string;
 }
 
 interface BucketTableRow {
-  id: string;
-  title: string;
+  name: string;
   lastModified: string;
   created: string;
 }
 
 interface ExperimentTableRow {
-  id: string;
-  title: string;
-  owner: string;
-  // permission: string;
+  name: string;
   lastModified: string;
   created: string;
 }

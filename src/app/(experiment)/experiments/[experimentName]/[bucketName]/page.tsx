@@ -2,20 +2,20 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import BucketTable from "@/components/Bucket/BucketTable";
-import NewBucketModal from "@/components/Bucket/NewBucketModal";
+import IterationTable from "@/components/Iteration/IterationTable";
+import NewIterationModal from "@/components/Iteration/NewIterationModal";
 
 interface PageProps {
   params: {
-    experimentId: string;
+    experimentName: string;
+    bucketName: string;
   };
 }
 
 const Page = ({ params }: PageProps) => {
-  const { experimentId } = params;
-  const [title, setTitle] = useState("");
+  const { experimentName, bucketName } = params;
   const [description, setDescription] = useState("");
-  const [buckets, setBuckets] = useState<BucketTableRow[]>([]);
+  const [iterations, setIterations] = useState<IterationTableRow[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateNew, setIsCreateNew] = useState(false);
@@ -34,31 +34,28 @@ const Page = ({ params }: PageProps) => {
       isCreateNew && setIsCreateNew(false);
       isDelete && setIsDelete(false);
       try {
-        const response = await fetch(`/api/bucket/get`, {
-          method: "POST",
-          body: JSON.stringify({ experimentId: experimentId }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }).then((res) => res.json());
+        const response = await fetch(
+          `/api/experiments/${experimentName}/buckets/${bucketName}/iterations`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        ).then((res) => res.json());
 
-        const dbBuckets = response.buckets;
-        if (dbBuckets) {
-          const transformedBuckets = dbBuckets.map((bucket: any) => {
-            console.log(bucket);
-            return {
-              id: bucket._id,
-              title: bucket.title,
-              lastModified: bucket.lastModified,
-              createdAt: bucket.createdAt,
-            };
-          }) as BucketTableRow[];
-          setBuckets(transformedBuckets);
-        }
+        const dbIterations = response.iterations;
+        const transformedIterations = dbIterations.map((iteration: any) => {
+          return {
+            name: iteration.name,
+            startTime: iteration.timestamp.startTime,
+            stopTime: iteration.timestamp.stopTime,
+          };
+        }) as IterationTableRow[];
+        console.log(transformedIterations);
 
-        setTitle(response.title);
-        console.log(response.title);
         setDescription(response.description);
+        setIterations(transformedIterations);
       } catch (error) {
         console.error(error);
       }
@@ -78,21 +75,23 @@ const Page = ({ params }: PageProps) => {
           color="primary"
           textAlign="left"
         >
-          {title}
+          {bucketName}
         </Typography>
       </Box>
       <Box width="100%">
-        <BucketTable
-          experimentId={experimentId}
-          rows={buckets}
+        <IterationTable
+          experimentName={experimentName}
+          bucketName={bucketName}
+          rows={iterations}
           handleDelete={handleDelete}
           handleToggleModal={handleToggleModal}
         />
       </Box>
 
-      <NewBucketModal
+      <NewIterationModal
         isModalOpen={isModalOpen}
-        experimentTitle={title}
+        experimentName={experimentName}
+        bucketName={bucketName}
         handleToggleModal={handleToggleModal}
         setIsCreateNew={setIsCreateNew}
       />

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { environmentDataSchema } from "./EnvironmentData";
 
 export const iterationSchema = new mongoose.Schema({
-  title: {
+  name: {
     type: String,
     required: true,
   },
@@ -12,7 +12,6 @@ export const iterationSchema = new mongoose.Schema({
   timestamp: {
     startTime: {
       type: Date,
-      default: Date.now,
     },
     stopTime: {
       type: Date,

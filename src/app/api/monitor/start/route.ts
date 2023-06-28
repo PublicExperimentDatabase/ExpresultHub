@@ -6,11 +6,11 @@ let monitorProcess = global.monitorProcess;
 export async function POST(req: Request, res: Response) {
   const body = await req.json();
 
-  const { experimentTitle, bucketTitle, iterationTitle, interval } = z
+  const { experimentName, bucketName, iterationName, interval } = z
     .object({
-      experimentTitle: z.string(),
-      bucketTitle: z.string(),
-      iterationTitle: z.string(),
+      experimentName: z.string(),
+      bucketName: z.string(),
+      iterationName: z.string(),
       interval: z.string(),
     })
     .parse(body);
@@ -18,7 +18,7 @@ export async function POST(req: Request, res: Response) {
   if (!monitorProcess) {
     monitorProcess = global.monitorProcess = spawn(
       "ts-node",
-      ["src/helper/monitor.ts", experimentTitle, bucketTitle, iterationTitle, interval],
+      ["src/helper/monitor.ts", experimentName, bucketName, iterationName, interval],
       {
         detached: true,
         stdio: "inherit",
