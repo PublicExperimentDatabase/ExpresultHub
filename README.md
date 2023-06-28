@@ -180,3 +180,23 @@ sh run.sh
 ```
 
 ## Architecture
+
+### API
+
+| API                                                             | Method | Description                                                 |
+| --------------------------------------------------------------- | ------ | ----------------------------------------------------------- |
+| /api/experiments                                                | GET    | Get all experiments                                         |
+| /api/experiments                                                | POST   | Create a new experiment                                     |
+| /api/experiments                                                | DELETE | Delete selected experiments                                 |
+| /api/experiments/:experimentName/buckets                        | GET    | Get buckets a specific experiment                           |
+| /api/experiments/:experimentName/buckets                        | POST   | Create a new bucket                                         |
+| /api/experiments/:experimentName/buckets                        | DELETE | Delete selected buckets                                     |
+| /api/experiments/:experimentName/buckets/:bucketName/iterations | GET    | Get iterations of a specific bucket                         |
+| /api/experiments/:experimentName/buckets/:bucketName/iterations | POST   | Create a new iteration                                      |
+| /api/experiments/:experimentName/buckets/:bucketName/iterations | DELETE | Delete selected iterations                                  |
+| /api/monitor/start                                              | POST   | Start monitoring and write the environment data into the db |
+| /api/monitor/stop                                               | POST   | Stop monitoring                                             |
+
+### How monitoring works
+
+When the user types a command and sends a request to the server API `/api/monitor/start`, the server calls a child process to run `src/helper/monitor.ts`. The child process writes environment data into the database at regular intervals. When the user types a command to stop the experiment, the server calls the child process to stop.
