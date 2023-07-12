@@ -25,7 +25,10 @@ const IterationTable = ({
       sortable: false,
       renderCell: (params) => {
         return (
-          <a href={`/experiments/${experimentName}/${params.row.name}`} style={{ color: "blue" }}>
+          <a
+            href={`/experiments/${experimentName}/${bucketName}/${params.row.name}`}
+            style={{ color: "blue" }}
+          >
             {params.value}
           </a>
         );

@@ -48,8 +48,10 @@ const Page = ({ params }: PageProps) => {
         const transformedIterations = dbIterations.map((iteration: any) => {
           return {
             name: iteration.name,
-            startTime: iteration.timestamp.startTime,
-            stopTime: iteration.timestamp.stopTime,
+            // startTime: iteration.timestamp.startTime,
+            // stopTime: iteration.timestamp.stopTime,
+            startTime: "",
+            stopTime: "",
           };
         }) as IterationTableRow[];
         console.log(transformedIterations);

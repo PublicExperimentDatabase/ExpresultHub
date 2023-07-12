@@ -21,6 +21,7 @@ export async function GET(req: NextRequest, context: { params: Props }) {
       },
       { "buckets.$": 1 }
     ).then((experiment: any) => experiment.buckets[0]);
+    console.log(existingBucket);
 
     return NextResponse.json(
       {
