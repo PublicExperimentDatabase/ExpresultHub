@@ -1,5 +1,5 @@
-// ./components/BarChart.js
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import {
@@ -49,7 +49,6 @@ const options = {
 
 const Page = ({ params }: PageProps) => {
   const { experimentName, bucketName, iterationName } = params;
-  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [timestamp, setTimestamp] = useState({ startTime: "", stopTime: "" });
   const [environmentData, setEnvironmentData] = useState([]);
@@ -66,7 +65,6 @@ const Page = ({ params }: PageProps) => {
             },
           }
         ).then((res) => res.json());
-        setName(response.name);
         setTimestamp(response.timestamp);
         setEnvironmentData(response.environmentData);
       } catch (error) {
