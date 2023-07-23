@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Typography } from "@mui/material";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -43,28 +43,32 @@ const Page = ({ params }: PageProps) => {
   const [iterationEnvironmentData, setIterationEnvironmentData] = useState([]);
   const [commandNames, setCommandNames] = useState<string[]>([]);
   const [commandDataArrays, setCommandDataArrays] = useState<CommandData[][]>([]);
-  const options = {
-    responsive: true,
-    height: "100",
-    interaction: {
-      mode: "index" as const,
-      intersect: false,
-    },
-    stacked: false,
-    plugins: {
-      title: {
-        display: true,
-        text: "CPU Monitoring for iteration",
+  function setChartOptions(title: string) {
+    const options = {
+      responsive: true,
+      height: "100",
+      interaction: {
+        mode: "index" as const,
+        intersect: false,
       },
-    },
-    scales: {
-      y: {
-        type: "linear" as const,
-        display: true,
-        position: "left" as const,
+      stacked: false,
+      plugins: {
+        title: {
+          display: true,
+          text: title,
+        },
       },
-    },
-  };
+      scales: {
+        y: {
+          type: "linear" as const,
+          display: true,
+          position: "left" as const,
+        },
+      },
+    };
+
+    return options;
+  }
 
   useEffect(() => {
     const fetchIteration = async () => {
@@ -90,24 +94,6 @@ const Page = ({ params }: PageProps) => {
       } catch (error) {
         console.error(error);
       }
-      const getDataset = () => {
-        const commandDataMap = new Map<string, any[]>();
-        iterationEnvironmentData.forEach((iterationData: any) => {
-          iterationData.forEach((commandData: any) => {
-            const commandName = commandData.command;
-
-            if (!commandDataMap.has(commandName)) {
-              commandDataMap.set(commandName, []);
-            }
-
-            commandDataMap.get(commandName)!.push(commandData);
-          });
-        });
-        setCommandNames(Array.from(commandDataMap.keys()) as string[]);
-        setCommandDataArrays(
-          commandNames.map((commandName) => commandDataMap.get(commandName)) as CommandData[][]
-        );
-      };
     };
 
     fetchIteration();
@@ -174,7 +160,7 @@ const Page = ({ params }: PageProps) => {
                   <Typography fontSize="md" color="textSecondary" textAlign="left">
                     Interval: {commandData[0].interval}
                   </Typography>
-                  <Line options={options} data={chartData} />
+                  <Line options={setChartOptions(commandNames[index])} data={chartData} />
                 </Box>
               );
             })}
