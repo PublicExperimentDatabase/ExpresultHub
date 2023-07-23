@@ -2,7 +2,7 @@ let monitorProcess = global.monitorProcess;
 
 export async function POST(req: Request, res: Response) {
   if (monitorProcess) {
-    monitorProcess.kill();
+    monitorProcess.kill("SIGINT");
     monitorProcess = global.monitorProcess = null;
     return new Response(
       JSON.stringify({

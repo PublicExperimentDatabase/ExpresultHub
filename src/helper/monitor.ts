@@ -1,6 +1,6 @@
-import osUtils from "os-utils";
 import dbConnect from "./dbConnect";
 import { Experiment } from "../types/database/Experiment";
+import { spawn } from "child_process";
 
 const experimentName = process.argv[2];
 const bucketName = process.argv[3];
@@ -26,37 +26,49 @@ async function getIterationDatabase(
   return { existingIteration };
 }
 
-async function monitor() {
-  let { existingIteration } = await getIterationDatabase(experimentName, bucketName, iterationName);
+function monitor() {
+  getIterationDatabase(experimentName, bucketName, iterationName).then(({ existingIteration }) => {
+    if (!existingIteration) {
+      console.log("No iteration found");
+      return;
+    }
 
-  if (!existingIteration) {
-    console.log("No iteration found");
-    return;
-  }
+    const newEnvironmentData = [
+      {
+        command: "CPU usage",
+        interval: interval,
+        record: [],
+      },
+      // ...
+    ];
 
-  const newEnvironmentData = [
-    {
-      command: "CPU usage",
-      interval: interval,
-      record: [],
-    }, // ...
-  ];
+    existingIteration.output = { EnvironmentData: newEnvironmentData };
+    existingIteration.timestamp.startTime = new Date();
 
-  existingIteration.output = { EnvironmentData: newEnvironmentData };
-  existingIteration.timestamp.startTime = new Date();
-
-  setInterval(async () => {
-    const cpuUsage = await new Promise<number>((resolve, reject) => {
-      osUtils.cpuUsage((usage: number) => resolve(usage));
+    // TODO: Encapsulate commands
+    const cpuUsage = spawn("mpstat", ["10"], {
+      detached: false,
     });
 
-    existingIteration.output.EnvironmentData[0].record.push({
-      timestamp: new Date(),
-      val: cpuUsage,
+    cpuUsage.stdout.on("data", (data: string) => {
+      const lines = data?.toString().split("\n");
+      if (lines) {
+        const lastLine = lines[lines.length - 2];
+        const fields = lastLine.trim().split(/\s+/);
+        const idle = parseFloat(fields[fields.length - 1]);
+        const usage = 100 - idle;
+        if (!isNaN(usage)) {
+          console.log(`CPU Usage: ${usage.toFixed(2)}%`);
+          existingIteration.output.EnvironmentData[0].record.push({
+            timestamp: new Date(),
+            val: usage,
+          });
+        }
+      }
     });
-    existingIteration.timestamp.stopTime = new Date();
 
-    try {
+    process.on("SIGINT", async () => {
+      console.log("SIGINT");
       const updatedExperiment = await Experiment.findOneAndUpdate(
         {
           name: experimentName,
@@ -82,10 +94,9 @@ async function monitor() {
         updatedExperiment.buckets[0].iterations[parseInt(iterationName)].output.EnvironmentData[0]
           .record
       );
-    } catch (error) {
-      console.error("Error saving experiment:", error);
-    }
-  }, interval * 1000);
+      process.exit(0);
+    });
+  });
 }
 
 monitor();
