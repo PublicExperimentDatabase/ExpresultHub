@@ -54,21 +54,26 @@ function monitor() {
       const lines = data?.toString().split("\n");
       if (lines) {
         const lastLine = lines[lines.length - 2];
-        const fields = lastLine.trim().split(/\s+/);
-        const idle = parseFloat(fields[fields.length - 1]);
-        const usage = 100 - idle;
-        if (!isNaN(usage)) {
-          console.log(`CPU Usage: ${usage.toFixed(2)}%`);
-          existingIteration.output.EnvironmentData[0].record.push({
-            timestamp: new Date(),
-            val: usage,
-          });
+        try {
+          const fields = lastLine.trim().split(/\s+/);
+          const idle = parseFloat(fields[fields.length - 1]);
+          const usage = 100 - idle;
+          if (!isNaN(usage)) {
+            console.log(`CPU Usage: ${usage.toFixed(2)}%`);
+            existingIteration.output.EnvironmentData[0].record.push({
+              timestamp: new Date(),
+              val: usage,
+            });
+          }
+        } catch (error) {
+          console.log(lastLine);
         }
       }
     });
 
     process.on("SIGINT", async () => {
       console.log("SIGINT");
+      existingIteration.timestamp.stopTime = new Date();
       const updatedExperiment = await Experiment.findOneAndUpdate(
         {
           name: experimentName,

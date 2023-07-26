@@ -1,5 +1,6 @@
 "use client";
 
+import CompareTable from "@/components/Visualization/CompareIterationTable";
 import {
   Box,
   Button,
@@ -35,7 +36,7 @@ const Page = ({ params }: PageProps) => {
             "Content-Type": "application/json",
           },
         }).then((res) => res.json());
-        setBuckets(response.buckets);
+        setBuckets(response.buckets.filter((bucket: any) => bucket.iterations.length > 0));
       } catch (error) {
         console.error(error);
       }
@@ -45,7 +46,7 @@ const Page = ({ params }: PageProps) => {
 
   useEffect(() => {
     const fetchIteration = async () => {
-      if (selectBucket !== "") {
+      if (!!selectBucket) {
         try {
           const response = await fetch(
             `/api/experiments/${experimentName}/buckets/${selectBucket}/iterations`,
@@ -65,6 +66,13 @@ const Page = ({ params }: PageProps) => {
     fetchIteration();
   }, [selectBucket]);
 
+  useEffect(() => {
+    const storedCompareIterations = localStorage.getItem("compareIterations");
+    if (storedCompareIterations) {
+      setCompareIterations(JSON.parse(storedCompareIterations));
+    }
+  }, []);
+
   const handleBucketChange = (event: SelectChangeEvent) => {
     setSelectBucket(event.target.value as string);
   };
@@ -76,9 +84,31 @@ const Page = ({ params }: PageProps) => {
       (iteration: any) => iteration.name === selectIteration
     ) as any;
     if (addedIteration) {
-      const updatedIteration = { ...addedIteration, bucket: selectBucket };
+      const updatedIteration = {
+        bucket: selectBucket,
+        iteration: addedIteration.name,
+        commands: [
+          {
+            command: "Run time (s)",
+            val:
+              (new Date(addedIteration.timestamp?.stopTime).getTime() -
+                new Date(addedIteration.timestamp?.startTime).getTime()) /
+              1000,
+          },
+        ],
+      };
       setCompareIterations([...compareIterations, updatedIteration]);
+      localStorage.setItem(
+        "compareIterations",
+        JSON.stringify([...compareIterations, updatedIteration])
+      );
     }
+  };
+
+  const handleIterationDelete = (iteration: any) => {
+    const updatedIterations = compareIterations.filter((i) => i !== iteration);
+    setCompareIterations(updatedIterations);
+    localStorage.setItem("compareIterations", JSON.stringify(updatedIterations));
   };
 
   return (
@@ -143,10 +173,12 @@ const Page = ({ params }: PageProps) => {
               Environment Data
             </Typography>
             <Box my={4}>
-              {compareIterations.map((iteration: any, index) => {
-                console.log(iteration);
-                return <Box key={index}>{iteration.name}</Box>;
-              })}
+              {compareIterations.length > 0 && (
+                <CompareTable
+                  iterations={compareIterations}
+                  handleIterationDelete={handleIterationDelete}
+                />
+              )}
             </Box>
           </Box>
         </Box>
