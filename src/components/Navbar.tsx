@@ -9,11 +9,13 @@ const Navbar = () => {
           Logo
         </Typography>
         <div>
-          <Button color="inherit">Home</Button>
+          {/* <Button color="inherit">Home</Button>
           <Button color="inherit">About</Button>
           <Button color="inherit">History</Button>
-          <Button color="inherit">Contact</Button>
-          <Button variant="contained">Get Started</Button>
+          <Button color="inherit">Contact</Button> */}
+          <Button variant="contained" href="/experiments">
+            Get Started
+          </Button>
         </div>
       </Toolbar>
     </AppBar>
