@@ -72,7 +72,7 @@ const Page = ({ params }: PageProps) => {
       }
     };
     fetchIteration();
-  }, []);
+  }, [experimentName, bucketName, iterationName]);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>

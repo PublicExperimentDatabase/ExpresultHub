@@ -61,7 +61,7 @@ const Page = ({ params }: PageProps) => {
       }
     };
     fetchIteration();
-  }, [isCreateNew, isDelete]);
+  }, [isCreateNew, isDelete, experimentName, bucketName]);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>

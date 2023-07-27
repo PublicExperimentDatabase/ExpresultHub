@@ -42,7 +42,7 @@ const Page = ({ params }: PageProps) => {
       }
     };
     fetchBucket();
-  }, []);
+  }, [experimentName]);
 
   useEffect(() => {
     const fetchIteration = async () => {
@@ -64,7 +64,7 @@ const Page = ({ params }: PageProps) => {
       }
     };
     fetchIteration();
-  }, [selectBucket]);
+  }, [selectBucket, experimentName]);
 
   useEffect(() => {
     const storedCompareIterations = localStorage.getItem("compareIterations");

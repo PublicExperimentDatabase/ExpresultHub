@@ -97,7 +97,7 @@ const Page = ({ params }: PageProps) => {
     };
 
     fetchIteration();
-  }, []);
+  }, [experimentName, bucketName]);
 
   useEffect(() => {
     const getDataset = () => {
