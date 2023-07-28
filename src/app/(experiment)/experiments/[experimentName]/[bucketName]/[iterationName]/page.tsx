@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -52,6 +52,11 @@ const Page = ({ params }: PageProps) => {
   const [description, setDescription] = useState("");
   const [timestamp, setTimestamp] = useState({ startTime: "", stopTime: "" });
   const [environmentData, setEnvironmentData] = useState([]);
+  const [currentField, setCurrentField] = React.useState("%usr");
+
+  const handleFieldChange = (event: React.MouseEvent<HTMLElement>, newField: string) => {
+    setCurrentField(newField);
+  };
 
   useEffect(() => {
     const fetchIteration = async () => {
@@ -128,6 +133,13 @@ const Page = ({ params }: PageProps) => {
           </Typography>
           <Box my={4}>
             {environmentData.map((data: any, index) => {
+              const headers: string[] = [];
+              data.record[0].fields.forEach((item: any) => {
+                if (typeof item.val === "number") {
+                  headers.push(item.header);
+                }
+              });
+
               const labels = Array.from(
                 { length: data.record.length },
                 (_, i) => data.interval * i
@@ -136,7 +148,9 @@ const Page = ({ params }: PageProps) => {
                 labels,
                 datasets: [
                   {
-                    data: data.record.map((item: any) => item.val),
+                    data: data.record.map((item: any) => {
+                      return item.fields.find((field: any) => field.header === currentField).val;
+                    }),
                     borderColor: "rgb(255, 99, 132)",
                     backgroundColor: "rgba(255, 99, 132, 0.5)",
                   },
@@ -156,6 +170,23 @@ const Page = ({ params }: PageProps) => {
                   <Typography fontSize="md" color="textSecondary" textAlign="left">
                     Interval: {data.interval}
                   </Typography>
+                  <Box display="flex" justifyContent="center" my={2}>
+                    <ToggleButtonGroup
+                      color="primary"
+                      value={currentField}
+                      exclusive
+                      onChange={handleFieldChange}
+                      aria-label="Platform"
+                    >
+                      {headers.map((header) => {
+                        return (
+                          <ToggleButton value={header} key={index}>
+                            {header}
+                          </ToggleButton>
+                        );
+                      })}
+                    </ToggleButtonGroup>
+                  </Box>
                   <Line options={options} data={chartData} />
                 </Box>
               );

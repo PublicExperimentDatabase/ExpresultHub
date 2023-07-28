@@ -5,7 +5,7 @@ import { spawn } from "child_process";
 const experimentName = process.argv[2];
 const bucketName = process.argv[3];
 const iterationName = process.argv[4];
-const interval = parseInt(process.argv[5]);
+const interval = process.argv[5];
 
 async function getIterationDatabase(
   experimentName: string,
@@ -46,27 +46,44 @@ function monitor() {
     existingIteration.timestamp.startTime = new Date();
 
     // TODO: Encapsulate commands
-    const cpuUsage = spawn("mpstat", ["10"], {
+    // Create a child process to run the "mpstat" command with a specified interval
+    const cpuUsage = spawn("mpstat", [interval], {
       detached: false,
     });
+    let cpuUsageHeaders: string[] = [];
 
+    // Listen for data events from the stdout of the child process
     cpuUsage.stdout.on("data", (data: string) => {
       const lines = data?.toString().split("\n");
-      if (lines) {
-        const lastLine = lines[lines.length - 2];
-        try {
-          const fields = lastLine.trim().split(/\s+/);
-          const idle = parseFloat(fields[fields.length - 1]);
-          const usage = 100 - idle;
-          if (!isNaN(usage)) {
-            console.log(`CPU Usage: ${usage.toFixed(2)}%`);
-            existingIteration.output.EnvironmentData[0].record.push({
-              timestamp: new Date(),
-              val: usage,
+
+      if (lines.length > 2) {
+        cpuUsageHeaders = lines[lines.length - 3].trim().split(/\s+/);
+      }
+
+      if (cpuUsageHeaders.length !== 0 && lines.length >= 2) {
+        // Extract values from the last line
+        const values = lines[lines.length - 2].trim().split(/\s+/);
+
+        const fields: DataPoint[] = [];
+
+        cpuUsageHeaders.forEach((header, index) => {
+          if (index > 0 && index < values.length) {
+            const val = isNaN(Number(values[index])) ? values[index] : Number(values[index]);
+            fields.push({
+              header: header,
+              val: val,
             });
           }
+        });
+
+        // Try to add the data points to an existing array of EnvironmentData
+        try {
+          existingIteration.output.EnvironmentData[0].record.push({
+            timestamp: new Date(),
+            fields: fields,
+          });
         } catch (error) {
-          console.log(lastLine);
+          console.log(error);
         }
       }
     });
@@ -94,10 +111,6 @@ function monitor() {
           ],
           new: true,
         }
-      );
-      console.log(
-        updatedExperiment.buckets[0].iterations[parseInt(iterationName)].output.EnvironmentData[0]
-          .record
       );
       process.exit(0);
     });

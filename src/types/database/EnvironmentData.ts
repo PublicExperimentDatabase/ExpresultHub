@@ -1,12 +1,23 @@
 import mongoose from "mongoose";
 
+const dataPointSchema = new mongoose.Schema({
+  header: {
+    type: String,
+    required: true,
+  },
+  val: {
+    type: Number || String,
+    required: true,
+  },
+});
+
 const timeSeriesSchema = new mongoose.Schema({
   timestamp: {
     type: Date,
     required: true,
   },
-  val: {
-    type: Number || String,
+  fields: {
+    type: [dataPointSchema],
     required: true,
   },
 });

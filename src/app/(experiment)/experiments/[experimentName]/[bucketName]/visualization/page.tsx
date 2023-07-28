@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
@@ -35,14 +35,21 @@ interface PageProps {
 interface CommandData {
   command: string;
   interval: number;
-  record: { val: number; time: string }[];
+  record: { fields: DataPoint[]; timestamp: string }[];
 }
+
 const Page = ({ params }: PageProps) => {
   const { experimentName, bucketName } = params;
   const [iterationNames, setIterationNames] = useState([]);
   const [iterationEnvironmentData, setIterationEnvironmentData] = useState([]);
   const [commandNames, setCommandNames] = useState<string[]>([]);
   const [commandDataArrays, setCommandDataArrays] = useState<CommandData[][]>([]);
+  const [currentField, setCurrentField] = React.useState("%usr");
+
+  const handleFieldChange = (event: React.MouseEvent<HTMLElement>, newField: string) => {
+    setCurrentField(newField);
+  };
+
   function setChartOptions(title: string) {
     const options = {
       responsive: true,
@@ -134,6 +141,14 @@ const Page = ({ params }: PageProps) => {
           </Typography>
           <Box my={4}>
             {commandDataArrays.map((commandData, index) => {
+              console.log(commandData);
+              const headers: string[] = [];
+              commandData[0].record[0].fields.forEach((item: any) => {
+                if (typeof item.val === "number") {
+                  headers.push(item.header);
+                }
+              });
+
               const chartData = {
                 labels: Array.from(
                   { length: commandData[0].record.length },
@@ -142,7 +157,9 @@ const Page = ({ params }: PageProps) => {
                 datasets: commandData.map((commandData, i) => {
                   return {
                     label: iterationNames[i],
-                    data: commandData.record.map((item: any) => item.val),
+                    data: commandData.record.map((item: any) => {
+                      return item.fields.find((field: any) => field.header === currentField).val;
+                    }),
                   };
                 }),
               };
@@ -160,6 +177,23 @@ const Page = ({ params }: PageProps) => {
                   <Typography fontSize="md" color="textSecondary" textAlign="left">
                     Interval: {commandData[index].interval}
                   </Typography>
+                  <Box display="flex" justifyContent="center" my={2}>
+                    <ToggleButtonGroup
+                      color="primary"
+                      value={currentField}
+                      exclusive
+                      onChange={handleFieldChange}
+                      aria-label="Platform"
+                    >
+                      {headers.map((header) => {
+                        return (
+                          <ToggleButton value={header} key={index}>
+                            {header}
+                          </ToggleButton>
+                        );
+                      })}
+                    </ToggleButtonGroup>
+                  </Box>
                   <Line options={setChartOptions(commandNames[index])} data={chartData} />
                 </Box>
               );
