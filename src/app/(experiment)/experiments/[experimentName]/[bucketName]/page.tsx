@@ -5,6 +5,7 @@ import { Box, Button, Typography } from "@mui/material";
 import IterationTable from "@/components/Iteration/IterationTable";
 import NewIterationModal from "@/components/Iteration/NewIterationModal";
 import Link from "next/link";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 interface PageProps {
   params: {
@@ -66,6 +67,9 @@ const Page = ({ params }: PageProps) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
+        <Link href={`experiments/${experimentName}`}>
+          <ArrowBackIcon />
+        </Link>
         <Typography
           variant="h3"
           fontWeight="bold"

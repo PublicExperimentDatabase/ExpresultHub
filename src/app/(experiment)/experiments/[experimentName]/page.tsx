@@ -5,6 +5,7 @@ import { Box, Button, Typography } from "@mui/material";
 import BucketTable from "@/components/Bucket/BucketTable";
 import NewBucketModal from "@/components/Bucket/NewBucketModal";
 import Link from "next/link";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 interface PageProps {
   params: {
@@ -64,6 +65,9 @@ const Page = ({ params }: PageProps) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
+        <Link href={`experiments`}>
+          <ArrowBackIcon />
+        </Link>
         <Typography
           variant="h3"
           fontWeight="bold"
