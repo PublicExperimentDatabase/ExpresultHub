@@ -144,12 +144,13 @@ const Page = ({ params }: PageProps) => {
                 { length: data.record.length },
                 (_, i) => data.interval * i
               );
+
               const chartData = {
                 labels,
                 datasets: [
                   {
                     data: data.record.map((item: any) => {
-                      return item.fields.find((field: any) => field.header === currentField).val;
+                      return item.fields.find((field: any) => field.header === currentField)?.val;
                     }),
                     borderColor: "rgb(255, 99, 132)",
                     backgroundColor: "rgba(255, 99, 132, 0.5)",

@@ -26,6 +26,11 @@ async function getIterationDatabase(
   return { existingIteration };
 }
 
+interface DataPoint {
+  header: string;
+  val: number | string;
+}
+
 function monitor() {
   getIterationDatabase(experimentName, bucketName, iterationName).then(({ existingIteration }) => {
     if (!existingIteration) {
@@ -55,35 +60,48 @@ function monitor() {
     // Listen for data events from the stdout of the child process
     cpuUsage.stdout.on("data", (data: string) => {
       const lines = data?.toString().split("\n");
+      console.log(lines);
 
       if (lines.length > 2) {
-        cpuUsageHeaders = lines[lines.length - 3].trim().split(/\s+/);
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (line !== "") {
+            cpuUsageHeaders = line.split(/\s+/);
+            break;
+          }
+        }
       }
 
-      if (cpuUsageHeaders.length !== 0 && lines.length >= 2) {
+      if (cpuUsageHeaders.length !== 0) {
         // Extract values from the last line
-        const values = lines[lines.length - 2].trim().split(/\s+/);
+        let values: string[] = [];
+        if (lines.length < 2) {
+          values = lines[lines.length - 1].trim().split(/\s+/);
+        } else {
+          values = lines[lines.length - 2].trim().split(/\s+/);
+        }
 
         const fields: DataPoint[] = [];
-
-        cpuUsageHeaders.forEach((header, index) => {
-          if (index > 0 && index < values.length) {
-            const val = isNaN(Number(values[index])) ? values[index] : Number(values[index]);
-            fields.push({
-              header: header,
-              val: val,
-            });
-          }
-        });
-
-        // Try to add the data points to an existing array of EnvironmentData
-        try {
-          existingIteration.output.EnvironmentData[0].record.push({
-            timestamp: new Date(),
-            fields: fields,
+        if (values.length === cpuUsageHeaders.length) {
+          cpuUsageHeaders.forEach((header, index) => {
+            if (index > 0 && index < values.length) {
+              const val = isNaN(Number(values[index])) ? values[index] : Number(values[index]);
+              fields.push({
+                header: header,
+                val: val,
+              });
+            }
           });
-        } catch (error) {
-          console.log(error);
+
+          // Try to add the data points to an existing array of EnvironmentData
+          try {
+            existingIteration.output.EnvironmentData[0].record.push({
+              timestamp: new Date(),
+              fields: fields,
+            });
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
     });
