@@ -13,6 +13,8 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Link from "next/link";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip);
 
@@ -82,6 +84,9 @@ const Page = ({ params }: PageProps) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
+        <Link href={`experiments/${experimentName}/${bucketName}`}>
+          <ArrowBackIcon />
+        </Link>
         <Typography
           variant="h3"
           fontWeight="bold"
