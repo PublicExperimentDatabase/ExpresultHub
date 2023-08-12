@@ -54,10 +54,14 @@ const Page = ({ params }: PageProps) => {
   const [description, setDescription] = useState("");
   const [timestamp, setTimestamp] = useState({ startTime: "", stopTime: "" });
   const [environmentData, setEnvironmentData] = useState([]);
-  const [currentField, setCurrentField] = React.useState("%usr");
+  const [currentFields, setCurrentFields] = useState<string[]>([]);
 
-  const handleFieldChange = (event: React.MouseEvent<HTMLElement>, newField: string) => {
-    setCurrentField(newField);
+  const handleFieldChange = (index: number, newField: string) => {
+    setCurrentFields((prevFields) => {
+      const updatedFields = [...prevFields];
+      updatedFields[index] = newField;
+      return updatedFields;
+    });
   };
 
   useEffect(() => {
@@ -155,7 +159,8 @@ const Page = ({ params }: PageProps) => {
                 datasets: [
                   {
                     data: data.record.map((item: any) => {
-                      return item.fields.find((field: any) => field.header === currentField)?.val;
+                      return item.fields.find((field: any) => field.header === currentFields[index])
+                        ?.val;
                     }),
                     borderColor: "rgb(255, 99, 132)",
                     backgroundColor: "rgba(255, 99, 132, 0.5)",
@@ -179,9 +184,9 @@ const Page = ({ params }: PageProps) => {
                   <Box display="flex" justifyContent="center" my={2}>
                     <ToggleButtonGroup
                       color="primary"
-                      value={currentField}
+                      value={currentFields[index]}
                       exclusive
-                      onChange={handleFieldChange}
+                      onChange={(event, newField) => handleFieldChange(index, newField)}
                       aria-label="Platform"
                     >
                       {headers.map((header) => {
