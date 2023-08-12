@@ -47,10 +47,14 @@ const Page = ({ params }: PageProps) => {
   const [iterationEnvironmentData, setIterationEnvironmentData] = useState([]);
   const [commandNames, setCommandNames] = useState<string[]>([]);
   const [commandDataArrays, setCommandDataArrays] = useState<CommandData[][]>([]);
-  const [currentField, setCurrentField] = React.useState("%usr");
+  const [currentFields, setCurrentFields] = useState<string[]>([]);
 
-  const handleFieldChange = (event: React.MouseEvent<HTMLElement>, newField: string) => {
-    setCurrentField(newField);
+  const handleFieldChange = (index: number, newField: string) => {
+    setCurrentFields((prevFields) => {
+      const updatedFields = [...prevFields];
+      updatedFields[index] = newField;
+      return updatedFields;
+    });
   };
 
   function setChartOptions(title: string) {
@@ -160,11 +164,11 @@ const Page = ({ params }: PageProps) => {
                   { length: commandData[0].record.length },
                   (_, i) => commandData[0].interval * i
                 ),
-                datasets: commandData.map((commandData, i) => {
+                datasets: commandData.map((data, i) => {
                   return {
                     label: iterationNames[i],
-                    data: commandData.record.map((item: any) => {
-                      return item.fields.find((field: any) => field.header === currentField).val;
+                    data: data.record.map((item: any) => {
+                      return item.fields.find((field: any) => field.header === currentFields[index])?.val;
                     }),
                   };
                 }),
@@ -178,17 +182,17 @@ const Page = ({ params }: PageProps) => {
                     color="textPrimary"
                     textAlign="left"
                   >
-                    {commandData[index].command}
+                    {commandData[0].command}
                   </Typography>
                   <Typography fontSize="md" color="textSecondary" textAlign="left">
-                    Interval: {commandData[index].interval}
+                    Interval: {commandData[0].interval}
                   </Typography>
                   <Box display="flex" justifyContent="center" my={2}>
                     <ToggleButtonGroup
                       color="primary"
-                      value={currentField}
+                      value={currentFields[index]}
                       exclusive
-                      onChange={handleFieldChange}
+                      onChange={(event, newField) => handleFieldChange(index, newField)}
                       aria-label="Platform"
                     >
                       {headers.map((header) => {
