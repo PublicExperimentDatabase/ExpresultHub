@@ -189,9 +189,9 @@ const Page = ({ params }: PageProps) => {
                       onChange={(event, newField) => handleFieldChange(index, newField)}
                       aria-label="Platform"
                     >
-                      {headers.map((header) => {
+                      {headers.map((header, i) => {
                         return (
-                          <ToggleButton value={header} key={index}>
+                          <ToggleButton value={header} key={i}>
                             {header}
                           </ToggleButton>
                         );

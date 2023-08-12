@@ -151,7 +151,6 @@ const Page = ({ params }: PageProps) => {
           </Typography>
           <Box my={4}>
             {commandDataArrays.map((commandData, index) => {
-              console.log(commandData);
               const headers: string[] = [];
               commandData[0].record[0].fields.forEach((item: any) => {
                 if (typeof item.val === "number") {
@@ -168,7 +167,8 @@ const Page = ({ params }: PageProps) => {
                   return {
                     label: iterationNames[i],
                     data: data.record.map((item: any) => {
-                      return item.fields.find((field: any) => field.header === currentFields[index])?.val;
+                      return item.fields.find((field: any) => field.header === currentFields[index])
+                        ?.val;
                     }),
                   };
                 }),
@@ -195,9 +195,9 @@ const Page = ({ params }: PageProps) => {
                       onChange={(event, newField) => handleFieldChange(index, newField)}
                       aria-label="Platform"
                     >
-                      {headers.map((header) => {
+                      {headers.map((header, i) => {
                         return (
-                          <ToggleButton value={header} key={index}>
+                          <ToggleButton value={header} key={i}>
                             {header}
                           </ToggleButton>
                         );
