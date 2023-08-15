@@ -14,6 +14,9 @@ import {
   Colors,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Link from "next/link";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -44,10 +47,14 @@ const Page = ({ params }: PageProps) => {
   const [iterationEnvironmentData, setIterationEnvironmentData] = useState([]);
   const [commandNames, setCommandNames] = useState<string[]>([]);
   const [commandDataArrays, setCommandDataArrays] = useState<CommandData[][]>([]);
-  const [currentField, setCurrentField] = React.useState("%usr");
+  const [currentFields, setCurrentFields] = useState<string[]>([]);
 
-  const handleFieldChange = (event: React.MouseEvent<HTMLElement>, newField: string) => {
-    setCurrentField(newField);
+  const handleFieldChange = (index: number, newField: string) => {
+    setCurrentFields((prevFields) => {
+      const updatedFields = [...prevFields];
+      updatedFields[index] = newField;
+      return updatedFields;
+    });
   };
 
   function setChartOptions(title: string) {
@@ -130,6 +137,9 @@ const Page = ({ params }: PageProps) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
+        <Link href={`experiments/${experimentName}/${bucketName}`}>
+          <ArrowBackIcon />
+        </Link>
         <Box my={4} px={2}>
           <Typography
             variant="h3"
@@ -142,7 +152,6 @@ const Page = ({ params }: PageProps) => {
           </Typography>
           <Box my={4}>
             {commandDataArrays.map((commandData, index) => {
-              console.log(commandData);
               const headers: string[] = [];
               commandData[0].record[0].fields.forEach((item: any) => {
                 if (typeof item.val === "number") {
@@ -155,11 +164,12 @@ const Page = ({ params }: PageProps) => {
                   { length: commandData[0].record.length },
                   (_, i) => commandData[0].interval * i
                 ),
-                datasets: commandData.map((commandData, i) => {
+                datasets: commandData.map((data, i) => {
                   return {
                     label: iterationNames[i],
-                    data: commandData.record.map((item: any) => {
-                      return item.fields.find((field: any) => field.header === currentField).val;
+                    data: data.record.map((item: any) => {
+                      return item.fields.find((field: any) => field.header === currentFields[index])
+                        ?.val;
                     }),
                   };
                 }),
@@ -173,22 +183,22 @@ const Page = ({ params }: PageProps) => {
                     color="textPrimary"
                     textAlign="left"
                   >
-                    {commandData[index].command}
+                    {commandData[0].command}
                   </Typography>
                   <Typography fontSize="md" color="textSecondary" textAlign="left">
-                    Interval: {commandData[index].interval}
+                    Interval: {commandData[0].interval}
                   </Typography>
                   <Box display="flex" justifyContent="center" my={2}>
                     <ToggleButtonGroup
                       color="primary"
-                      value={currentField}
+                      value={currentFields[index]}
                       exclusive
-                      onChange={handleFieldChange}
+                      onChange={(event, newField) => handleFieldChange(index, newField)}
                       aria-label="Platform"
                     >
-                      {headers.map((header) => {
+                      {headers.map((header, i) => {
                         return (
-                          <ToggleButton value={header} key={index}>
+                          <ToggleButton value={header} key={i}>
                             {header}
                           </ToggleButton>
                         );

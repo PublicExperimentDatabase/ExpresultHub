@@ -13,6 +13,8 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Link from "next/link";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip);
 
@@ -52,10 +54,14 @@ const Page = ({ params }: PageProps) => {
   const [description, setDescription] = useState("");
   const [timestamp, setTimestamp] = useState({ startTime: "", stopTime: "" });
   const [environmentData, setEnvironmentData] = useState([]);
-  const [currentField, setCurrentField] = React.useState("%usr");
+  const [currentFields, setCurrentFields] = useState<string[]>([]);
 
-  const handleFieldChange = (event: React.MouseEvent<HTMLElement>, newField: string) => {
-    setCurrentField(newField);
+  const handleFieldChange = (index: number, newField: string) => {
+    setCurrentFields((prevFields) => {
+      const updatedFields = [...prevFields];
+      updatedFields[index] = newField;
+      return updatedFields;
+    });
   };
 
   useEffect(() => {
@@ -82,6 +88,9 @@ const Page = ({ params }: PageProps) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
+        <Link href={`experiments/${experimentName}/${bucketName}`}>
+          <ArrowBackIcon />
+        </Link>
         <Typography
           variant="h3"
           fontWeight="bold"
@@ -144,12 +153,14 @@ const Page = ({ params }: PageProps) => {
                 { length: data.record.length },
                 (_, i) => data.interval * i
               );
+
               const chartData = {
                 labels,
                 datasets: [
                   {
                     data: data.record.map((item: any) => {
-                      return item.fields.find((field: any) => field.header === currentField).val;
+                      return item.fields.find((field: any) => field.header === currentFields[index])
+                        ?.val;
                     }),
                     borderColor: "rgb(255, 99, 132)",
                     backgroundColor: "rgba(255, 99, 132, 0.5)",
@@ -173,14 +184,14 @@ const Page = ({ params }: PageProps) => {
                   <Box display="flex" justifyContent="center" my={2}>
                     <ToggleButtonGroup
                       color="primary"
-                      value={currentField}
+                      value={currentFields[index]}
                       exclusive
-                      onChange={handleFieldChange}
+                      onChange={(event, newField) => handleFieldChange(index, newField)}
                       aria-label="Platform"
                     >
-                      {headers.map((header) => {
+                      {headers.map((header, i) => {
                         return (
-                          <ToggleButton value={header} key={index}>
+                          <ToggleButton value={header} key={i}>
                             {header}
                           </ToggleButton>
                         );

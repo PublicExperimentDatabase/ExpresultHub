@@ -11,7 +11,9 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 interface PageProps {
   params: {
@@ -133,6 +135,9 @@ const Page = ({ params }: PageProps) => {
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
         <Box my={4} px={2}>
+          <Link href={`experiments/${experimentName}`}>
+            <ArrowBackIcon />
+          </Link>
           <Typography
             variant="h3"
             fontWeight="bold"
