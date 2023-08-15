@@ -90,6 +90,7 @@ const Page = ({ params }: PageProps) => {
           }
         ).then((res) => res.json());
         const dbIterations = response.iterations;
+        console.log(dbIterations);
         const transformedIterations = dbIterations.map((iteration: any) => {
           return {
             name: iteration.name,

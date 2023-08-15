@@ -26,6 +26,7 @@ const Page = ({ params }: PageProps) => {
   const [buckets, setBuckets] = useState([]);
   const [iterations, setIterations] = useState([]);
   const [compareIterations, setCompareIterations] = useState<any[]>([]);
+  const [compareFullIterations, setCompareFullIterations] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchBucket = async () => {
@@ -67,6 +68,11 @@ const Page = ({ params }: PageProps) => {
   }, [selectBucket, experimentName]);
 
   useEffect(() => {
+    const storedCompareFullIterations = localStorage.getItem("compareFullIterations");
+    if(storedCompareFullIterations)
+    {
+      setCompareFullIterations(JSON.parse(storedCompareFullIterations));
+    }
     const storedCompareIterations = localStorage.getItem("compareIterations");
     if (storedCompareIterations) {
       setCompareIterations(JSON.parse(storedCompareIterations));
@@ -84,7 +90,9 @@ const Page = ({ params }: PageProps) => {
       (iteration: any) => iteration.name === selectIteration
     ) as any;
     if (addedIteration) {
+      console.log(addedIteration)
       const updatedIteration = {
+        id:addedIteration._id,
         bucket: selectBucket,
         iteration: addedIteration.name,
         commands: [
@@ -97,21 +105,31 @@ const Page = ({ params }: PageProps) => {
           },
         ],
       };
+      console.log(updatedIteration);
+      setCompareFullIterations([...compareFullIterations, addedIteration]);
       setCompareIterations([...compareIterations, updatedIteration]);
       localStorage.setItem(
         "compareIterations",
         JSON.stringify([...compareIterations, updatedIteration])
       );
+      localStorage.setItem(
+        "compareFullIterations",
+        JSON.stringify([...compareFullIterations, addedIteration])
+      );
     }
   };
 
   const handleIterationDelete = (iteration: any) => {
+    const updatedFullIterations = compareFullIterations.filter((i) => i._id!==iteration.id);
+    setCompareFullIterations(updatedFullIterations);
+    localStorage.setItem("compareFullIterations", JSON.stringify(updatedFullIterations));
     const updatedIterations = compareIterations.filter((i) => i !== iteration);
     setCompareIterations(updatedIterations);
     localStorage.setItem("compareIterations", JSON.stringify(updatedIterations));
   };
 
   return (
+    
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
         <Box my={4} px={2}>
@@ -176,6 +194,7 @@ const Page = ({ params }: PageProps) => {
               {compareIterations.length > 0 && (
                 <CompareTable
                   iterations={compareIterations}
+                  fulliterations={compareFullIterations}
                   handleIterationDelete={handleIterationDelete}
                 />
               )}
