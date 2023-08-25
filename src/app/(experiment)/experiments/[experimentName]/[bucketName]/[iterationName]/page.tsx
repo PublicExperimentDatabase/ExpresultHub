@@ -55,6 +55,7 @@ const Page = ({ params }: PageProps) => {
   const [timestamp, setTimestamp] = useState({ startTime: "", stopTime: "" });
   const [environmentData, setEnvironmentData] = useState([]);
   const [currentFields, setCurrentFields] = useState<string[]>([]);
+  const [iteration, setIteration] = useState<string[]>();
 
   const handleFieldChange = (index: number, newField: string) => {
     setCurrentFields((prevFields) => {
@@ -76,6 +77,7 @@ const Page = ({ params }: PageProps) => {
             },
           }
         ).then((res) => res.json());
+        setIteration(response);
         setTimestamp(response.timestamp);
         setEnvironmentData(response.environmentData);
       } catch (error) {
@@ -84,6 +86,19 @@ const Page = ({ params }: PageProps) => {
     };
     fetchIteration();
   }, [experimentName, bucketName, iterationName]);
+  console.log(environmentData);
+
+
+  const exportData = () => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(iteration)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = `${experimentName}_${bucketName}_${iterationName}.json`;
+
+    link.click();
+  };
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
@@ -166,6 +181,7 @@ const Page = ({ params }: PageProps) => {
                     backgroundColor: "rgba(255, 99, 132, 0.5)",
                   },
                 ],
+                
               };
               return (
                 <Box key={data._id}>
@@ -205,6 +221,11 @@ const Page = ({ params }: PageProps) => {
           </Box>
         </Box>
       </Box>
+      <div className="App">
+      <button type="button" onClick={exportData}>
+        Export Data
+      </button>
+    </div>
     </Box>
   );
 };

@@ -35,28 +35,32 @@ ChartJS.register(
   Tooltip
 );
 
-const options = {
-  responsive: true,
-  height: "100",
-  interaction: {
-    mode: "index" as const,
-    intersect: false,
-  },
-  stacked: false,
-  plugins: {
-    title: {
-      display: true,
-      text: "CPU Monitoring for iteration",
+function setChartOptions(title: string) {
+  const options = {
+    responsive: true,
+    height: "100",
+    interaction: {
+      mode: "index" as const,
+      intersect: false,
     },
-  },
-  scales: {
-    y: {
-      type: "linear" as const,
-      display: true,
-      position: "left" as const,
+    stacked: false,
+    plugins: {
+      title: {
+        display: true,
+        text: title,
+      },
     },
-  },
-};
+    scales: {
+      y: {
+        type: "linear" as const,
+        display: true,
+        position: "left" as const,
+      },
+    },
+  };
+
+  return options;
+}
 
 interface Command {
   command: string;
@@ -74,6 +78,11 @@ interface Props {
   fulliterations: FullIteration[];
   handleIterationDelete: (iteration: Iteration) => void;
 }
+interface CommandData {
+  command: string;
+  interval: number;
+  record: { fields: DataPoint[]; timestamp: string }[];
+}
 
 const CompareTable = ({
   iterations,
@@ -89,12 +98,62 @@ const CompareTable = ({
     borderBottom: "1px solid #ddd",
   };
 
-  const [currentField, setCurrentField] = React.useState("%usr");
-  const handleFieldChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newField: string
-  ) => {
-    setCurrentField(newField);
+  const [iterationNames, setIterationNames] = useState([]);
+  const [iterationEnvironmentData, setIterationEnvironmentData] = useState([]);
+  const [commandNames, setCommandNames] = useState<string[]>([]);
+  const [commandDataArrays, setCommandDataArrays] = useState<CommandData[][]>(
+    []
+  );
+  const [currentFields, setCurrentFields] = useState<string[]>([]);
+  const handleFieldChange = (index: number, newField: string) => {
+    setCurrentFields((prevFields) => {
+      const updatedFields = [...prevFields];
+      updatedFields[index] = newField;
+      return updatedFields;
+    });
+  };
+  useEffect(() => {
+    const transformedIterations: any = fulliterations.map((iteration: any) => {
+      return {
+        name: iteration.name,
+        environmentData: iteration.output.EnvironmentData,
+      };
+    });
+    setIterationNames(transformedIterations.map((d: FullIteration) => d.name));
+    setIterationEnvironmentData(
+      transformedIterations.map((d: FullIteration) => d.environmentData)
+    );
+  }, [fulliterations]);
+  useEffect(() => {
+    const getDataset = () => {
+      const commandDataMap = new Map<string, any[]>();
+      iterationEnvironmentData.forEach((iterationData: any) => {
+        iterationData.forEach((commandData: any) => {
+          const commandName = commandData.command;
+
+          if (!commandDataMap.has(commandName)) {
+            commandDataMap.set(commandName, []);
+          }
+
+          commandDataMap.get(commandName)!.push(commandData);
+        });
+      });
+      setCommandNames(Array.from(commandDataMap.keys()) as string[]);
+      setCommandDataArrays(
+        Array.from(commandDataMap.values()).filter(Boolean) as CommandData[][]
+      );
+    };
+    getDataset();
+  }, [iterationEnvironmentData]);
+  const exportData = () => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(fulliterations)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = `combined_data.json`;
+
+    link.click();
   };
   return (
     <>
@@ -184,160 +243,104 @@ const CompareTable = ({
         </TableBody>
       </Table>
       <>
-        {fulliterations.map((iteration: any) => {
-          return (
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              mx={4}
-              key={iteration.name}
-            >
-              <Box width="100%" paddingX={10}>
-                <Typography
-                  variant="h3"
-                  fontWeight="bold"
-                  fontSize="2xl"
-                  my={4}
-                  px={2}
-                  color="primary"
-                  textAlign="left"
-                >
-                  Name: {iteration.name}
-                </Typography>
-                <Box my={4} px={2}>
-                  <Typography
-                    variant="h5"
-                    fontWeight="bold"
-                    fontSize="xl"
-                    color="textPrimary"
-                    textAlign="left"
-                  >
-                    Start Time
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    fontSize="md"
-                    color="textSecondary"
-                    textAlign="left"
-                  >
-                    {iteration.timestamp.startTime}
-                  </Typography>
-                </Box>
-                <Box my={4} px={2}>
-                  <Typography
-                    variant="h5"
-                    fontWeight="bold"
-                    fontSize="xl"
-                    color="textPrimary"
-                    textAlign="left"
-                  >
-                    End Time
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    fontSize="md"
-                    color="textSecondary"
-                    textAlign="left"
-                  >
-                    {iteration.timestamp.stopTime}
-                  </Typography>
-                </Box>
-                <Box my={4} px={2}>
-                  <Typography
-                    variant="h4"
-                    fontWeight="bold"
-                    fontSize="2xl"
-                    color="textPrimary"
-                    textAlign="left"
-                  >
-                    Environment Data
-                  </Typography>
-                  <Box my={4}>
-                    {iteration.output.EnvironmentData?.map(
-                      (data: any, index: any) => {
-                        const headers: string[] = [];
-                        data.record[0].fields.forEach((item: any) => {
-                          if (typeof item.val === "number") {
-                            headers.push(item.header);
-                          }
-                        });
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          mx={4}
+        >
+          <Box width="100%" paddingX={10}>
+            <Box my={4} px={2}>
+              <Typography
+                variant="h3"
+                fontWeight="bold"
+                fontSize="2xl"
+                color="primary"
+                textAlign="left"
+              >
+                Visualization
+              </Typography>
+              <Box my={4}>
+                {commandDataArrays.map((commandData, index) => {
+                  const headers: string[] = [];
+                  commandData[0].record[0].fields.forEach((item: any) => {
+                    if (typeof item.val === "number") {
+                      headers.push(item.header);
+                    }
+                  });
 
-                        const labels = Array.from(
-                          { length: data.record.length },
-                          (_, i) => data.interval * i
-                        );
-                        const chartData = {
-                          labels,
-                          datasets: [
-                            {
-                              data: data.record.map((item: any) => {
-                                return item.fields.find(
-                                  (field: any) => field.header === currentField
-                                ).val;
-                              }),
-                              borderColor: "rgb(255, 99, 132)",
-                              backgroundColor: "rgba(255, 99, 132, 0.5)",
-                            },
-                            {
-                              data: data.record.map((item: any) => {
-                                return item.fields.find(
-                                  (field: any) => field.header === currentField
-                                ).val;
-                              }),
-                              borderColor: "rgb(255, 99, 132)",
-                              backgroundColor: "rgba(255, 99, 132, 0.5)",
-                            },
-                          ],
-                        };
-                        return (
-                          <Box key={data._id}>
-                            <Typography
-                              key={index}
-                              variant="h5"
-                              fontSize="xl"
-                              color="textPrimary"
-                              textAlign="left"
-                            >
-                              {data.command}
-                            </Typography>
-                            <Typography
-                              fontSize="md"
-                              color="textSecondary"
-                              textAlign="left"
-                            >
-                              Interval: {data.interval}
-                            </Typography>
-                            <Box display="flex" justifyContent="center" my={2}>
-                              <ToggleButtonGroup
-                                color="primary"
-                                value={currentField}
-                                exclusive
-                                onChange={handleFieldChange}
-                                aria-label="Platform"
-                              >
-                                {headers.map((header) => {
-                                  return (
-                                    <ToggleButton value={header} key={index}>
-                                      {header}
-                                    </ToggleButton>
-                                  );
-                                })}
-                              </ToggleButtonGroup>
-                            </Box>
-                            <Line options={options} data={chartData} />
-                          </Box>
-                        );
-                      }
-                    )}
-                  </Box>
-                </Box>
+                  const chartData = {
+                    labels: Array.from(
+                      { length: commandData[0].record.length },
+                      (_, i) => commandData[0].interval * i
+                    ),
+                    datasets: commandData.map((data, i) => {
+                      return {
+                        label: iterationNames[i],
+                        data: data.record.map((item: any) => {
+                          return item.fields.find(
+                            (field: any) =>
+                              field.header === currentFields[index]
+                          )?.val;
+                        }),
+                      };
+                    }),
+                  };
+                  return (
+                    <Box key={index}>
+                      <Typography
+                        key={index}
+                        variant="h5"
+                        fontSize="xl"
+                        color="textPrimary"
+                        textAlign="left"
+                      >
+                        {commandData[0].command}
+                      </Typography>
+                      <Typography
+                        fontSize="md"
+                        color="textSecondary"
+                        textAlign="left"
+                      >
+                        Interval: {commandData[0].interval}
+                      </Typography>
+                      <Box display="flex" justifyContent="center" my={2}>
+                        <ToggleButtonGroup
+                          color="primary"
+                          value={currentFields[index]}
+                          exclusive
+                          onChange={(event, newField) =>
+                            handleFieldChange(index, newField)
+                          }
+                          aria-label="Platform"
+                        >
+                          {headers.map((header, i) => {
+                            return (
+                              <ToggleButton value={header} key={i}>
+                                {header}
+                              </ToggleButton>
+                            );
+                          })}
+                        </ToggleButtonGroup>
+                      </Box>
+                      <Line
+                        options={setChartOptions(commandNames[index])}
+                        data={chartData}
+                      />
+                    </Box>
+                  );
+                })}
               </Box>
             </Box>
-          );
-        })}
+          </Box>
+        </Box>
       </>
+      <div className="App">
+        <button type="button" onClick={exportData}>
+          Export Data
+        </button>
+      </div>
     </>
   );
 };
