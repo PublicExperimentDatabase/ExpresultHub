@@ -1,113 +1,43 @@
-# Public Experiment GUI
+# Public Artifact and Data Visualization Repository
 
-## Introduction
+This repository is an integral part of the "Public Artifact and Data Visualization" project. It serves as a user-friendly Graphical User Interface (GUI) designed to visualize experiments recorded through the command-line interface. The application is built using Next.js and relies on a MongoDB cluster as its primary database. It leverages Material UI and Chart.js to implement an intuitive and visually appealing user interface. The purpose of this app is to act as a comprehensive dashboard for all user-recorded experiments, allowing for in-depth analysis of metrics.
 
-It is a dashboard that enables users to browse and manage their experiments and iteration runs.
+## Table of Contents
+- [Home](#home)
+- [Experiment Dashboard](#experiment-dashboard)
+- [Experiment Visualisation Comparison](#experiment-visualisation-comparison)
+- [Experiment Details](#experiment-details)
+  - [Bucket Details](#bucket-details)
+  - [Iteration Details](#iteration-details)
 
-## Get Started
+## Home
+The home page (`/home`) serves as the entry point to the website and provides navigation links to different sections of the application.
 
-### Prerequisites
+## Experiment Dashboard
+The experiment dashboard (`/experiment`) is the central hub for users. It offers a comprehensive overview of all their experiments, along with links to individual experiment details.
 
-- [Node.js](https://nodejs.org/en/) (>= 18.0.0)
-- [npm](https://www.npmjs.com/)
-- [MongoDB](https://www.mongodb.com/)
+## Experiment Visualisation Comparison
+The visualisation comparison feature (`/experiments/visualisation`) is a powerful tool that enables users to compare different experiments based on various parameters. Users can visualize and compare experiment data using a variety of graphs for each recorded metric. Additionally, the app allows users to export the compared data in JSON format for reference on other devices.
 
-### Installation
+## Experiment Details
+The app provides a detailed structure for each experiment, with the following substructures:
 
-#### For GUI
+### Bucket Details
+`/experiment/[experiment name]` displays a list of all the buckets within the experiment. Users can also access a similar visualisation feature as the experiment dashboard.
 
-1. Clone the repository
+### Iteration Details
+`/experiment/[experiment name]/[bucket name]/` presents a list of all the iterations specific to a particular experiment's bucket. Like other sections, it offers visualisation features for a more granular view of the data.
 
-```bash
-git clone https://github.com/PublicExperimentDatabase/PublicExperimentGUI.git
-```
+### Iteration Dashboard
+`/experiment/[experiment name]/[bucket name]/[Iteration name]/` offers a comprehensive dashboard for individual iterations, displaying all associated metrics and visual representations, including recorded time and intervals.
 
-2. Install dependencies
+## Visualize Experiments
+The `/visualise` section allows users to visualize any experiment, even those not recorded personally. Users can import JSON files containing data for a specific iteration and utilize the same powerful visualization features for comparison and analysis.
 
-```bash
-cd PublicExperimentGUI
-npm install || yarn install
-```
+Feel free to explore, visualize, and compare your experiments efficiently with our user-friendly interface.
 
-3. Set up environment variables
 
-```bash
-cp .env.example .env.local
-```
 
-```bash
-# .env.local
-MONGODB_URI=<your-mongodb-uri>
-```
-
-4. Start the server
-
-```bash
-npm run dev || yarn dev
-```
-
-5. Open http://localhost:3000 in your browser
-
-#### For CLI
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/PublicExperimentDatabase/PublicExperimentCLI.git
-```
-
-2. Install dependencies
-
-```bash
-cd PublicExperimentCLI
-npm install || yarn install
-```
-
-3. Link the package
-
-```bash
-npm link || yarn link
-```
-
-## Usage
-
-1. Write bash command
-
-[fib_experiment](https://github.com/PublicExperimentDatabase/test-experiment.git) as an example
-
-```bash
-#!/bin/bash
-
-# add-experiment <experiment-name> [description]
-publicexperimentcli add-experiment fib
-# for bucket in fib_iter fib_mem fib_rec
-for bucket in fib_rec
-do
-    # add-bucket <bucket-name> [description]
-    publicexperimentcli add-bucket fib $bucket
-    for it in $(seq 0 2)
-    do
-        # add-iteration <experiment-name> <bucket-name> <iteration-number>
-        publicexperimentcli add-iteration fib $bucket $it
-        # start-monitor <experiment-name> <bucket-name> <iteration-number> <interval> [metrics ...]
-        publicexperimentcli start-monitor fib $bucket $it 10
-        # run
-        out/$bucket 50
-        # stop-monitor
-        publicexperimentcli stop-monitor
-    done
-done
-
-```
-
-2. Start the experiment
-
-```bash
-sh build.sh
-
-sh run.sh
-```
-
-3. Open http://localhost:3000 in your browser and you can see the experiments.
+---
 
 
