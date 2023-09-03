@@ -1,4 +1,4 @@
-# Public Artifact and Data Visualization Repository
+# ExpresHult Repository
 
 This repository is an integral part of the "Public Artifact and Data Visualization" project. It serves as a user-friendly Graphical User Interface (GUI) designed to visualize experiments recorded through the command-line interface. The application is built using Next.js and relies on a MongoDB cluster as its primary database. It leverages Material UI and Chart.js to implement an intuitive and visually appealing user interface. The purpose of this app is to act as a comprehensive dashboard for all user-recorded experiments, allowing for in-depth analysis of metrics.
 
@@ -9,6 +9,7 @@ This repository is an integral part of the "Public Artifact and Data Visualizati
 - [Experiment Details](#experiment-details)
   - [Bucket Details](#bucket-details)
   - [Iteration Details](#iteration-details)
+- [How to Set Up the Application](#setting-up)
 
 ## Home
 The home page (`/home`) serves as the entry point to the website and provides navigation links to different sections of the application.
@@ -34,7 +35,54 @@ The app provides a detailed structure for each experiment, with the following su
 ## Visualize Experiments
 The `/visualise` section allows users to visualize any experiment, even those not recorded personally. Users can import JSON files containing data for a specific iteration and utilize the same powerful visualization features for comparison and analysis.
 
-Feel free to explore, visualize, and compare your experiments efficiently with our user-friendly interface.
+# Setting Up
+
+Follow these steps to set up and run this application on your machine:
+
+## Getting Started
+
+1. **Fork the Repository**
+
+   Click the "Fork" button at the top right corner of this repository to create your own copy.
+
+2. **Clone the Forked Repository**
+
+   Use the `git clone` command to clone the repository to your local machine.
+
+3. **Navigate to the Project Directory**
+
+   Change your working directory to the project folder.
+
+## Installation
+
+1. **Install Dependencies**
+
+   Run `npm install` to install the project dependencies.
+
+## Configuration
+
+1. **Configure MongoDB**
+
+   - Create a MongoDB database if you don't have one already.
+   - Copy the connection URL for your MongoDB database.
+   - Create a `.env.local` file in the root of your project and add the MongoDB connection URL as follows:
+
+     ```env
+     MONGODB_URI=your-mongodb-connection-url
+     ```
+
+     Replace `your-mongodb-connection-url` with the actual URL of your MongoDB database.
+
+## Running the Application
+
+1. **Start the Development Server**
+
+   Run `npm run dev` to start the Next.js development server. Your application will be accessible at `http://localhost:3000` by default.
+
+2. **Access Your Local Application**
+
+   Open your web browser and go to `http://localhost:3000` to access your locally running Next.js application.
+
 
 
 
