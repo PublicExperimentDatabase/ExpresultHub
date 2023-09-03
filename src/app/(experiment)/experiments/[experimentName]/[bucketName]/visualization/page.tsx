@@ -110,10 +110,10 @@ const Page = ({ params }: PageProps) => {
         console.error(error);
       }
     };
-
+    
     fetchIteration();
   }, [experimentName, bucketName]);
-
+  console.log(iterationEnvironmentData);
   useEffect(() => {
     const getDataset = () => {
       const commandDataMap = new Map<string, any[]>();
