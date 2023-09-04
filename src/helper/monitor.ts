@@ -2,6 +2,7 @@ import dbConnect from "./dbConnect";
 import { Experiment } from "../types/database/Experiment";
 import { cpuUsageMonitoring } from "./monitorCommands/mpstat";
 import { memoUsageMonitoring } from "./monitorCommands/vmstat";
+import { ioStatMonitoring } from "./monitorCommands/iostat";
 
 const experimentName = process.argv[2];
 const bucketName = process.argv[3];
@@ -50,6 +51,11 @@ function monitor() {
         interval: interval,
         record: [],
       },
+      {
+        command: "IO statistics",
+        interval: interval,
+        record: [],
+      },
       // ...
     ];
 
@@ -58,6 +64,8 @@ function monitor() {
 
     cpuUsageMonitoring(interval, existingIteration);
     memoUsageMonitoring(interval, existingIteration);
+    ioStatMonitoring(interval, existingIteration);
+    // ...
 
     process.on("SIGINT", async () => {
       console.log("SIGINT");
