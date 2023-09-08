@@ -28,11 +28,6 @@ async function getIterationDatabase(
   return { existingIteration };
 }
 
-interface DataPoint {
-  header: string;
-  val: number | string;
-}
-
 function monitor() {
   getIterationDatabase(experimentName, bucketName, iterationName).then(({ existingIteration }) => {
     if (!existingIteration) {
@@ -44,17 +39,14 @@ function monitor() {
       {
         command: "CPU usage",
         interval: interval,
-        record: [],
       },
       {
         command: "Memory usage",
         interval: interval,
-        record: [],
       },
       {
         command: "IO statistics",
         interval: interval,
-        record: [],
       },
       // ...
     ];
@@ -62,9 +54,9 @@ function monitor() {
     existingIteration.output = { EnvironmentData: newEnvironmentData };
     existingIteration.timestamp.startTime = new Date();
 
-    cpuUsageMonitoring(interval, existingIteration);
-    memoUsageMonitoring(interval, existingIteration);
-    ioStatMonitoring(interval, existingIteration);
+    cpuUsageMonitoring(interval, existingIteration, 0);
+    memoUsageMonitoring(interval, existingIteration, 1);
+    ioStatMonitoring(interval, existingIteration, 2);
     // ...
 
     process.on("SIGINT", async () => {

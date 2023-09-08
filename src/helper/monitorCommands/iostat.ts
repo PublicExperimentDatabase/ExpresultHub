@@ -1,10 +1,5 @@
 import { spawn, ChildProcess } from "child_process";
 
-interface DataPoint {
-  header: string;
-  val: string | number;
-}
-
 const ioStatHeaders: string[] = [
   "Device",
   "tps",
@@ -19,7 +14,7 @@ const ioStatHeaders: string[] = [
 const iterLineCount = 2;
 const prevLineCount = 0;
 
-export function ioStatMonitoring(interval: string, existingIteration: any): ChildProcess {
+export function ioStatMonitoring(interval: string, existingIteration: any, index: number): ChildProcess {
   // Create a child process to run the "mpstat" command with a specified interval
   const ioStat = spawn("iostat", [interval], { detached: false });
   let cnt = 0;
@@ -32,11 +27,11 @@ export function ioStatMonitoring(interval: string, existingIteration: any): Chil
     lines.forEach((line) => {
       if (line !== "") {
         const values = line.split(/\s+/);
-        const fields: DataPoint[] = [];
+        const fields: {header: string, val: string | number}[] = []
         if (values && values.length === ioStatHeaders.length) {
           if (cnt - prevLineCount > 0 && (cnt - prevLineCount + 1) % iterLineCount === 0) {
-            ioStatHeaders.forEach((header, index) => {
-              const val = isNaN(Number(values[index])) ? values[index] : Number(values[index]);
+            ioStatHeaders.forEach((header, i) => {
+              const val = isNaN(Number(values[i])) ? values[i] : Number(values[i]);
               fields.push({
                 header: header,
                 val: val,
@@ -44,7 +39,7 @@ export function ioStatMonitoring(interval: string, existingIteration: any): Chil
             });
             // Try to add the data points to an existing array of EnvironmentData
             try {
-              existingIteration.output.EnvironmentData[3].record.push({
+              existingIteration.output.EnvironmentData[index].record.push({
                 timestamp: new Date(),
                 fields: fields,
               });
