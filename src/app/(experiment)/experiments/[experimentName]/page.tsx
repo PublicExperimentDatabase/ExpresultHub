@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import BucketTable from "@/components/Bucket/BucketTable";
 import NewBucketModal from "@/components/Bucket/NewBucketModal";
 import Link from "next/link";
@@ -28,6 +28,15 @@ const Page = ({ params }: PageProps) => {
 
   const handleDelete = () => {
     setIsDelete(!isDelete);
+  };
+
+
+  const handleVisualizationClick = () => {
+    
+    const visualizationPageUrl = `/experiments/${experimentName}/visualization`;
+    window.location.href = visualizationPageUrl;
+
+    
   };
 
   useEffect(() => {
@@ -63,43 +72,48 @@ const Page = ({ params }: PageProps) => {
   }, [isCreateNew, isDelete, experimentName]);
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
-      <Box width="100%" paddingX={10}>
-        <Link href={`experiments`}>
-          <ArrowBackIcon />
-        </Link>
-        <Typography
-          variant="h3"
-          fontWeight="bold"
-          fontSize="2xl"
-          my={4}
-          px={2}
-          color="primary"
-          textAlign="left"
-        >
-          {experimentName}
-        </Typography>
-      </Box>
-      <Box width="100%">
-        <BucketTable
-          experimentName={experimentName}
-          rows={buckets}
-          handleDelete={handleDelete}
-          handleToggleModal={handleToggleModal}
-        />
-      </Box>
-      <Button>
-        <Link href={`/experiments/${experimentName}/visualization`}>Visualization</Link>
-      </Button>
+    <Card>
+      <CardContent>
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
+          <Box width="100%" paddingX={10}>
+            <Link href={`experiments`}>
+              <ArrowBackIcon />
+            </Link>
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              fontSize="2xl"
+              my={4}
+              px={2}
+              color="primary"
+              textAlign="left"
+            >
+              {experimentName}
+            </Typography>
+          </Box>
+          <Box width="100%">
+            <BucketTable
+              experimentName={experimentName}
+              rows={buckets}
+              handleDelete={handleDelete}
+              handleToggleModal={handleToggleModal}
+            />
+          </Box>
+          <Button variant="contained" color="primary" onClick={handleVisualizationClick}>
+            Visualization
+          </Button>
 
-      <NewBucketModal
-        isModalOpen={isModalOpen}
-        experimentName={experimentName}
-        handleToggleModal={handleToggleModal}
-        setIsCreateNew={setIsCreateNew}
-      />
-    </Box>
+          <NewBucketModal
+            isModalOpen={isModalOpen}
+            experimentName={experimentName}
+            handleToggleModal={handleToggleModal}
+            setIsCreateNew={setIsCreateNew}
+          />
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 
 export default Page;
+

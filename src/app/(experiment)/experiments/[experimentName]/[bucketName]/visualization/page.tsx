@@ -1,7 +1,14 @@
 "use client";
 
-import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Card,
+  CardContent,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -88,7 +95,7 @@ const Page = ({ params }: PageProps) => {
     const fetchIteration = async () => {
       try {
         const response = await fetch(
-          `/api/experiments/${experimentName}/buckets/${bucketName}/iterations`, //fetching the iterations for showing the data in the drop down box
+          `/api/experiments/${experimentName}/buckets/${bucketName}/iterations`,
           {
             method: "GET",
             headers: {
@@ -140,77 +147,79 @@ const Page = ({ params }: PageProps) => {
         <Link href={`experiments/${experimentName}/${bucketName}`}>
           <ArrowBackIcon />
         </Link>
-        <Box my={4} px={2}>
-          <Typography
-            variant="h3"
-            fontWeight="bold"
-            fontSize="2xl"
-            color="primary"
-            textAlign="left"
-          >
-            Visualization
-          </Typography>
-          <Box my={4}>
-            {commandDataArrays.map((commandData, index) => {
-              const headers: string[] = [];
-              commandData[0].record[0].fields.forEach((item: any) => {
-                if (typeof item.val === "number") {
-                  headers.push(item.header);
-                }
-              });
+        <Card>
+          <CardContent>
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              fontSize="2xl"
+              color="primary"
+              textAlign="left"
+            >
+              Visualization
+            </Typography>
+            <Box my={4}>
+              {commandDataArrays.map((commandData, index) => {
+                const headers: string[] = [];
+                commandData[0].record[0].fields.forEach((item: any) => {
+                  if (typeof item.val === "number") {
+                    headers.push(item.header);
+                  }
+                });
 
-              const chartData = {
-                labels: Array.from(
-                  { length: commandData[0].record.length },
-                  (_, i) => commandData[0].interval * i
-                ),
-                datasets: commandData.map((data, i) => {
-                  return {
-                    label: iterationNames[i],
-                    data: data.record.map((item: any) => {
-                      return item.fields.find((field: any) => field.header === currentFields[index])
-                        ?.val;
-                    }),
-                  };
-                }),
-              };
-              return (
-                <Box key={index}>
-                  <Typography
-                    key={index}
-                    variant="h5"
-                    fontSize="xl"
-                    color="textPrimary"
-                    textAlign="left"
-                  >
-                    {commandData[0].command}
-                  </Typography>
-                  <Typography fontSize="md" color="textSecondary" textAlign="left">
-                    Interval: {commandData[0].interval}
-                  </Typography>
-                  <Box display="flex" justifyContent="center" my={2}>
-                    <ToggleButtonGroup
-                      color="primary"
-                      value={currentFields[index]}
-                      exclusive
-                      onChange={(event, newField) => handleFieldChange(index, newField)}
-                      aria-label="Platform"
+                const chartData = {
+                  labels: Array.from(
+                    { length: commandData[0].record.length },
+                    (_, i) => commandData[0].interval * i
+                  ),
+                  datasets: commandData.map((data, i) => {
+                    return {
+                      label: iterationNames[i],
+                      data: data.record.map((item: any) => {
+                        return item.fields.find((field: any) => field.header === currentFields[index])
+                          ?.val;
+                      }),
+                    };
+                  }),
+                };
+                return (
+                  <Box key={index}>
+                    <Typography
+                      key={index}
+                      variant="h5"
+                      fontSize="xl"
+                      color="textPrimary"
+                      textAlign="left"
                     >
-                      {headers.map((header, i) => {
-                        return (
-                          <ToggleButton value={header} key={i}>
-                            {header}
-                          </ToggleButton>
-                        );
-                      })}
-                    </ToggleButtonGroup>
+                      {commandData[0].command}
+                    </Typography>
+                    <Typography fontSize="md" color="textSecondary" textAlign="left">
+                      Interval: {commandData[0].interval}
+                    </Typography>
+                    <Box display="flex" justifyContent="center" my={2}>
+                      <ToggleButtonGroup
+                        color="primary"
+                        value={currentFields[index]}
+                        exclusive
+                        onChange={(event, newField) => handleFieldChange(index, newField)}
+                        aria-label="Platform"
+                      >
+                        {headers.map((header, i) => {
+                          return (
+                            <ToggleButton value={header} key={i}>
+                              {header}
+                            </ToggleButton>
+                          );
+                        })}
+                      </ToggleButtonGroup>
+                    </Box>
+                    <Line options={setChartOptions(commandNames[index])} data={chartData} />
                   </Box>
-                  <Line options={setChartOptions(commandNames[index])} data={chartData} />
-                </Box>
-              );
-            })}
-          </Box>
-        </Box>
+                );
+              })}
+            </Box>
+          </CardContent>
+        </Card>
       </Box>
     </Box>
   );
