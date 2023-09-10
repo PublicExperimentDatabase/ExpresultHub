@@ -35,6 +35,7 @@ export const environmentDataSchema = new mongoose.Schema({
   },
   record: {
     type: [timeSeriesSchema],
+    default: []
   },
 });
 

@@ -1,13 +1,8 @@
 import { spawn, ChildProcess } from "child_process";
 
-interface DataPoint {
-  header: string;
-  val: string | number;
-}
-
 const cpuUsageHeaders: string[] = [
   "Time",
-  "PM",
+  // "PM",
   "CPU",
   "%usr",
   "%nice",
@@ -21,7 +16,14 @@ const cpuUsageHeaders: string[] = [
   "%idle",
 ];
 
-export function cpuUsageMonitoring(interval: string, existingIteration: any): ChildProcess {
+const iterLineCount = 2;
+const prevLineCount = 0;
+
+export function cpuUsageMonitoring(
+  interval: string,
+  existingIteration: any,
+  index: number
+): ChildProcess {
   // Create a child process to run the "mpstat" command with a specified interval
   const cpuUsage = spawn("mpstat", [interval], { detached: false });
   let cnt = 0;
@@ -34,11 +36,11 @@ export function cpuUsageMonitoring(interval: string, existingIteration: any): Ch
     lines.forEach((line) => {
       if (line !== "") {
         const values = line.trim().split(/\s+/);
-        const fields: DataPoint[] = [];
+        const fields: { header: string; val: string | number }[] = [];
         if (values.length === cpuUsageHeaders.length) {
-          if (cnt > 0) {
-            cpuUsageHeaders.forEach((header, index) => {
-              const val = isNaN(Number(values[index])) ? values[index] : Number(values[index]);
+          if (cnt - prevLineCount > 0 && (cnt - prevLineCount + 1) % iterLineCount === 0) {
+            cpuUsageHeaders.forEach((header, i) => {
+              const val = isNaN(Number(values[i])) ? values[i] : Number(values[i]);
               fields.push({
                 header: header,
                 val: val,
@@ -46,7 +48,7 @@ export function cpuUsageMonitoring(interval: string, existingIteration: any): Ch
             });
             // Try to add the data points to an existing array of EnvironmentData
             try {
-              existingIteration.output.EnvironmentData[0].record.push({
+              existingIteration.output.EnvironmentData[index].record.push({
                 timestamp: new Date(),
                 fields: fields,
               });
