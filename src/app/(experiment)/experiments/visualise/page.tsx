@@ -26,14 +26,7 @@ import { Line } from "react-chartjs-2";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Link from "next/link";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip);
 
 const FileVisualiser = () => {
   const [description, setDescription] = useState("");
@@ -124,12 +117,7 @@ const FileVisualiser = () => {
         </Typography>
         <Box mt={2}>
           <label htmlFor="file">
-            <input
-              id="file"
-              type="file"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
+            <input id="file" type="file" onChange={handleFileChange} style={{ display: "none" }} />
             <Button
               variant="outlined"
               component="span"
@@ -148,7 +136,7 @@ const FileVisualiser = () => {
             <Typography variant="body1" color="textSecondary">
               File details:
             </Typography>
-            <ul sx={{ listStyleType: "none", pl: 2 }}>
+            <ul style={{ listStyleType: "none", paddingLeft: 2 }}>
               <li>Name: {file.name}</li>
               <li>Type: {file.type}</li>
               <li>Size: {file.size} bytes</li>
@@ -190,12 +178,7 @@ const FileVisualiser = () => {
             >
               End Time
             </Typography>
-            <Typography
-              variant="body1"
-              fontSize="md"
-              color="textSecondary"
-              textAlign="left"
-            >
+            <Typography variant="body1" fontSize="md" color="textSecondary" textAlign="left">
               {timestamp.stopTime}
             </Typography>
           </Box>
@@ -248,11 +231,7 @@ const FileVisualiser = () => {
                     >
                       {data.command}
                     </Typography>
-                    <Typography
-                      fontSize="md"
-                      color="textSecondary"
-                      textAlign="left"
-                    >
+                    <Typography fontSize="md" color="textSecondary" textAlign="left">
                       Interval: {data.interval}
                     </Typography>
                     <Box display="flex" justifyContent="center" my={2}>
@@ -260,9 +239,7 @@ const FileVisualiser = () => {
                         color="primary"
                         value={currentFields[index]}
                         exclusive
-                        onChange={(event, newField) =>
-                          handleFieldChange(index, newField)
-                        }
+                        onChange={(event, newField) => handleFieldChange(index, newField)}
                         aria-label="Platform"
                       >
                         {headers.map((header, i) => {
