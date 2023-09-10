@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import {
+  Box,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  IconButton,
+  Grid,
+} from "@mui/material";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,9 +36,9 @@ interface PageProps {
   };
 }
 
-const options = {
+const chartOptions = {
   responsive: true,
-  height: "100",
+  height: "200",
   interaction: {
     mode: "index" as const,
     intersect: false,
@@ -51,7 +61,6 @@ const options = {
 
 const Page = ({ params }: PageProps) => {
   const { experimentName, bucketName, iterationName } = params;
-  const [description, setDescription] = useState("");
   const [timestamp, setTimestamp] = useState({ startTime: "", stopTime: "" });
   const [environmentData, setEnvironmentData] = useState([]);
   const [currentFields, setCurrentFields] = useState<string[]>([]);
@@ -100,62 +109,74 @@ const Page = ({ params }: PageProps) => {
     link.click();
   };
 
+  const exportData = () => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(iteration)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = `${experimentName}_${bucketName}_${iterationName}.json`;
+
+    link.click();
+  };
+
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
-      <Box width="100%" paddingX={10}>
-        <Link href={`experiments/${experimentName}/${bucketName}`}>
-          <ArrowBackIcon />
-        </Link>
-        <Typography
-          variant="h3"
-          fontWeight="bold"
-          fontSize="2xl"
-          my={4}
-          px={2}
-          color="primary"
-          textAlign="left"
-        >
-          Name: {iterationName}
-        </Typography>
-        <Box my={4} px={2}>
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            fontSize="xl"
-            color="textPrimary"
-            textAlign="left"
-          >
-            Start Time
-          </Typography>
-          <Typography variant="body1" fontSize="md" color="textSecondary" textAlign="left">
-            {timestamp.startTime}
-          </Typography>
-        </Box>
-        <Box my={4} px={2}>
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            fontSize="xl"
-            color="textPrimary"
-            textAlign="left"
-          >
-            End Time
-          </Typography>
-          <Typography variant="body1" fontSize="md" color="textSecondary" textAlign="left">
-            {timestamp.stopTime}
-          </Typography>
-        </Box>
-        <Box my={4} px={2}>
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            fontSize="2xl"
-            color="textPrimary"
-            textAlign="left"
-          >
-            Environment Data
-          </Typography>
-          <Box my={4}>
+    <Card variant="outlined">
+      <CardContent>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Link href={`experiments/${experimentName}/${bucketName}`}>
+              <IconButton color="primary">
+                <ArrowBackIcon />
+              </IconButton>
+            </Link>
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              color="primary"
+              textAlign="left"
+            >
+              Name: {iterationName}
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              color="textPrimary"
+              textAlign="left"
+              mb={1}
+            >
+              Start Time
+            </Typography>
+            <Typography variant="body1" fontSize="md" color="textSecondary" textAlign="left">
+              {timestamp.startTime}
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              color="textPrimary"
+              textAlign="left"
+              mb={1}
+            >
+              End Time
+            </Typography>
+            <Typography variant="body1" fontSize="md" color="textSecondary" textAlign="left">
+              {timestamp.stopTime}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              color="textPrimary"
+              textAlign="left"
+              mt={2}
+            >
+              Environment Data
+            </Typography>
             {environmentData.map((data: any, index) => {
               const headers: string[] = [];
               data.record[0].fields.forEach((item: any) => {
@@ -183,51 +204,53 @@ const Page = ({ params }: PageProps) => {
                 ],
                 
               };
+
               return (
-                <Box key={data._id}>
+                <Box key={data._id} mt={2}>
                   <Typography
-                    key={index}
-                    variant="h5"
-                    fontSize="xl"
+                    variant="h6"
+                    fontWeight="bold"
                     color="textPrimary"
                     textAlign="left"
+                    mb={1}
                   >
                     {data.command}
                   </Typography>
-                  <Typography fontSize="md" color="textSecondary" textAlign="left">
+                  <Typography variant="body2" fontSize="md" color="textSecondary" textAlign="left">
                     Interval: {data.interval}
                   </Typography>
-                  <Box display="flex" justifyContent="center" my={2}>
-                    <ToggleButtonGroup
-                      color="primary"
-                      value={currentFields[index]}
-                      exclusive
-                      onChange={(event, newField) => handleFieldChange(index, newField)}
-                      aria-label="Platform"
-                    >
-                      {headers.map((header, i) => {
-                        return (
-                          <ToggleButton value={header} key={i}>
-                            {header}
-                          </ToggleButton>
-                        );
-                      })}
-                    </ToggleButtonGroup>
-                  </Box>
-                  <Line options={options} data={chartData} />
+                  <ToggleButtonGroup
+                    color="primary"
+                    value={currentFields[index]}
+                    exclusive
+                    onChange={(event, newField) => handleFieldChange(index, newField)}
+                    aria-label="Platform"
+                  >
+                    {headers.map((header, i) => {
+                      return (
+                        <ToggleButton value={header} key={i}>
+                          {header}
+                        </ToggleButton>
+                      );
+                    })}
+                  </ToggleButtonGroup>
+                  <Line options={chartOptions} data={chartData} />
                 </Box>
               );
             })}
-          </Box>
-        </Box>
-      </Box>
-      <div className="App">
-      <button type="button" onClick={exportData}>
-        Export Data
-      </button>
-    </div>
-    </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" color="primary" onClick={exportData}>
+              Export Data
+            </Button>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   );
 };
 
 export default Page;
+
+
+

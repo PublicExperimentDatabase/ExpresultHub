@@ -1,21 +1,24 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Link, Box } from "@mui/material";
 
 const Navbar = () => {
   return (
     <AppBar position="sticky" color="primary" sx={{ top: 0, left: 0, right: 0, zIndex: 100 }}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Logo
-        </Typography>
-        <div>
-          {/* <Button color="inherit">Home</Button>
+      <Link href="/">
+      <Box
+        component="img"
+        sx={{ height: 100 }}
+        alt="Logo"
+        src="https://i.postimg.cc/NG1PkjKK/Untitled-3.png"
+      />
+      
+    </Link>
+        <div style={{marginLeft:"75%"}}>
+          <Button color="inherit" href="/experiments">Home</Button>
+          <Button color="inherit" href="/experiments/visualise">Visualise</Button>
           <Button color="inherit">About</Button>
-          <Button color="inherit">History</Button>
-          <Button color="inherit">Contact</Button> */}
-          <Button variant="contained" href="/experiments">
-            Get Started
-          </Button>
+          
         </div>
       </Toolbar>
     </AppBar>

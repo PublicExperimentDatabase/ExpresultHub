@@ -13,6 +13,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
+  Button
 } from "@mui/material";
 import {
   Chart as ChartJS,
@@ -337,9 +338,14 @@ const CompareTable = ({
         </Box>
       </>
       <div className="App">
-        <button type="button" onClick={exportData}>
-          Export Data
-        </button>
+      <Button
+      variant="contained"
+      color="primary"
+      onClick={exportData}
+      sx={{ marginTop: 2 }} // Adjust the styling as needed
+    >
+      Export Data
+    </Button>
       </div>
     </>
   );
