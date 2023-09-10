@@ -56,10 +56,10 @@ Follow these steps to set up and run this application on your machine:
 ## Installation
 
 1. **Install Dependencies**
-
-   **Method 1:** Run `docker build -t expresult -f Dockerfile .`
    
-   **Method 2:** Run `npm install` to install the project dependencies.
+   **Method 1:** Run `npm install` to install the project dependencies.
+   
+   **Method 2:** Run `docker build -t expresult -f Dockerfile .`
 
 ## Configuration
 
@@ -87,6 +87,80 @@ Follow these steps to set up and run this application on your machine:
 
    Open your web browser and go to `http://localhost:3000` to access your locally running Next.js application.
 
+# Starting monitor
+
+## Installation
+
+1. Clone the repository `git clone https://github.com/PublicExperimentDatabase/ExpresultHubCLI.git`.
+
+2. Navigate to the project directory `cd ExpresultHubCLI`.
+
+3. Install dependencies `npm install`.
+
+4. Create a symbolic link for the CLI tool `npm link`.
+
+## Usage
+
+Once you have completed the installation steps, you can use the CLI tool by running the following command:
+
+  - `publicexperimentcli add-experiment <experiment-name> [description]`: Adds a new experiment with the specified name and optional description.
+
+  - `publicexperimentcli add-bucket <experiment-name> <bucket-name> [description]`: Adds a new bucket to an existing experiment. The bucket is associated with the specified experiment and can have an optional description.
+  
+  - `publicexperimentcli add-iteration <experiment-name> <bucket-name> <iteration-number>`: Adds a new iteration to a specific bucket within an experiment. The iteration is identified by its number and is associated with the specified experiment and bucket.
+  
+  - `publicexperimentcli start-monitor <experiment-name> <bucket-name> <iteration-number> <interval>`: Starts monitoring the specified experiment, bucket, and iteration. The monitoring interval is specified in seconds, and you can optionally specify specific metrics to monitor.
+  
+  - `publicexperimentcli stop-monitor`: Stops the monitoring process for the current experiment, bucket, and iteration.
+
+## Setting Up and Running Your Experiment
+To set up and run your experiment using the ExpresultHubCLI tool, follow these steps:
+
+1. Add a new experiment:
+   ```bash
+   publicexperimentcli add-experiment <experiment-name> [description]
+   ```
+
+2. Define your buckets and iterations using the following script as an example:
+   ```bash
+   # for bucket in <bucket1> <bucket2> <bucket3> ...
+   for bucket in <bucket1> <bucket2> <bucket3>
+   do
+     # add-bucket <experiment-name> <bucket-name> [description]
+     publicexperimentcli add-bucket <experiment-name> $bucket [description]
+     for it in $(seq 0 <num-iterations>)
+     do
+       # add-iteration <experiment-name> <bucket-name> <iteration-number>
+       publicexperimentcli add-iteration <experiment-name> $bucket $it
+       # start-monitor <experiment-name> <bucket-name> <iteration-number> <interval> [metrics ...]
+       publicexperimentcli start-monitor <experiment-name> $bucket $it <monitor-interval> [metrics ...]
+       # run your custom script or command here
+       <your-custom-script-or-command>
+       # stop-monitor
+       publicexperimentcli stop-monitor
+     done
+   done
+    ```
+
+  Replace `<bucket1>`, `<bucket2>`, etc. with the names of your desired buckets. Customize the script by specifying the number of iterations `<num-iterations>`, the monitoring interval `<monitor-interval>`, and your own custom script or command `<your-custom-script-or-command>`.
+
+3. Save the script as a shell file, for example, `my_experiment.sh`.
+
+4. Grant execute permissions to the script:
+
+```bash
+chmod +x my_experiment.sh
+```
+
+5. Run your experiment:
+```bash
+./my_experiment.sh
+```
+This will execute your custom script, which includes the commands provided in the example. The script will create an experiment, add buckets and iterations, start monitoring, run your custom logic, and stop monitoring for each iteration.
+
+For a complete example and code implementation, you can refer to the [Example Repository](https://github.com/PublicExperimentDatabase/test-experiment/blob/master/run.sh) that demonstrates the setup and execution of the experiment using the ExpresultHubCLI tool.
+
+## Customizing Monitored Commands
 
 
 
