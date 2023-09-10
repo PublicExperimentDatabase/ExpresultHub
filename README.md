@@ -57,7 +57,9 @@ Follow these steps to set up and run this application on your machine:
 
 1. **Install Dependencies**
 
-   Run `npm install` to install the project dependencies.
+   **Method 1:** Run `docker build -t expresult -f Dockerfile .`
+   
+   **Method 2:** Run `npm install` to install the project dependencies.
 
 ## Configuration
 
@@ -77,9 +79,11 @@ Follow these steps to set up and run this application on your machine:
 
 1. **Start the Development Server**
 
-   Run `npm run dev` to start the Next.js development server. Your application will be accessible at `http://localhost:3000` by default.
+   **Method 1:** Run `npm run dev` to start the Next.js development server. Your application will be accessible at `http://localhost:3000` by default.
+   
+   **Method 2:** Run `docker run expresult`.
 
-2. **Access Your Local Application**
+3. **Access Your Local Application**
 
    Open your web browser and go to `http://localhost:3000` to access your locally running Next.js application.
 
