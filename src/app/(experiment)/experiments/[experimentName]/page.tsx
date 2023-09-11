@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import BucketTable from "@/components/Bucket/BucketTable";
 import NewBucketModal from "@/components/Bucket/NewBucketModal";
@@ -30,14 +30,14 @@ const Page = ({ params }: PageProps) => {
     setIsDelete(!isDelete);
   };
 
+
   const handleVisualizationClick = () => {
+    
     const visualizationPageUrl = `/experiments/${experimentName}/visualization`;
     window.location.href = visualizationPageUrl;
-  };
 
-  const memoizedBuckets = useMemo(() => {
-    return buckets;
-  }, [buckets]);
+    
+  };
 
   useEffect(() => {
     const fetchIteration = async () => {
@@ -74,13 +74,7 @@ const Page = ({ params }: PageProps) => {
   return (
     <Card>
       <CardContent>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          mx={4}
-        >
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
           <Box width="100%" paddingX={10}>
             <Link href={`experiments`}>
               <ArrowBackIcon />
@@ -100,7 +94,7 @@ const Page = ({ params }: PageProps) => {
           <Box width="100%">
             <BucketTable
               experimentName={experimentName}
-              rows={memoizedBuckets}
+              rows={buckets}
               handleDelete={handleDelete}
               handleToggleModal={handleToggleModal}
             />

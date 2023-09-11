@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 interface PageProps {
@@ -23,7 +23,7 @@ interface PageProps {
 
 const Page = ({ params }: PageProps) => {
   const { experimentName } = params;
-  const selectBucketRef = useRef<string>("");
+  const [selectBucket, setSelectBucket] = useState("");
   const [selectIteration, setSelectIteration] = useState("");
   const [buckets, setBuckets] = useState([]);
   const [iterations, setIterations] = useState([]);
@@ -48,22 +48,11 @@ const Page = ({ params }: PageProps) => {
   }, [experimentName]);
 
   useEffect(() => {
-    const storedCompareFullIterations = localStorage.getItem("compareFullIterations");
-    if (storedCompareFullIterations) {
-      setCompareFullIterations(JSON.parse(storedCompareFullIterations));
-    }
-    const storedCompareIterations = localStorage.getItem("compareIterations");
-    if (storedCompareIterations) {
-      setCompareIterations(JSON.parse(storedCompareIterations));
-    }
-  }, []);
-
-  useEffect(() => {
     const fetchIteration = async () => {
-      if (!!selectBucketRef.current) {
+      if (!!selectBucket) {
         try {
           const response = await fetch(
-            `/api/experiments/${experimentName}/buckets/${selectBucketRef.current}/iterations`,
+            `/api/experiments/${experimentName}/buckets/${selectBucket}/iterations`,
             {
               method: "GET",
               headers: {
@@ -78,12 +67,23 @@ const Page = ({ params }: PageProps) => {
       }
     };
     fetchIteration();
-  }, [selectBucketRef, experimentName]);
+  }, [selectBucket, experimentName]);
+
+  useEffect(() => {
+    const storedCompareFullIterations = localStorage.getItem("compareFullIterations");
+    if(storedCompareFullIterations)
+    {
+      setCompareFullIterations(JSON.parse(storedCompareFullIterations));
+    }
+    const storedCompareIterations = localStorage.getItem("compareIterations");
+    if (storedCompareIterations) {
+      setCompareIterations(JSON.parse(storedCompareIterations));
+    }
+  }, []);
 
   const handleBucketChange = (event: SelectChangeEvent) => {
-    selectBucketRef.current = event.target.value as string; // 更新 selectBucket 的引用值
+    setSelectBucket(event.target.value as string);
   };
-
   const handleIterationChange = (event: SelectChangeEvent) => {
     setSelectIteration(event.target.value as string);
   };
@@ -92,10 +92,10 @@ const Page = ({ params }: PageProps) => {
       (iteration: any) => iteration.name === selectIteration
     ) as any;
     if (addedIteration) {
-      console.log(addedIteration);
+      console.log(addedIteration)
       const updatedIteration = {
-        id: addedIteration._id,
-        bucket: selectBucketRef.current,
+        id:addedIteration._id,
+        bucket: selectBucket,
         iteration: addedIteration.name,
         commands: [
           {
@@ -122,7 +122,7 @@ const Page = ({ params }: PageProps) => {
   };
 
   const handleIterationDelete = (iteration: any) => {
-    const updatedFullIterations = compareFullIterations.filter((i) => i._id !== iteration.id);
+    const updatedFullIterations = compareFullIterations.filter((i) => i._id!==iteration.id);
     setCompareFullIterations(updatedFullIterations);
     localStorage.setItem("compareFullIterations", JSON.stringify(updatedFullIterations));
     const updatedIterations = compareIterations.filter((i) => i !== iteration);
@@ -157,7 +157,7 @@ const Page = ({ params }: PageProps) => {
           >
             <FormControl sx={{ width: "35%" }}>
               <InputLabel>Bucket</InputLabel>
-              <Select value={selectBucketRef.current} label="Bucket" onChange={handleBucketChange}>
+              <Select value={selectBucket} label="Bucket" onChange={handleBucketChange}>
                 {buckets.map((bucket: any, index) => (
                   <MenuItem value={bucket.name} key={index}>
                     {bucket.name}
