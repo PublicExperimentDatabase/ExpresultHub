@@ -1,4 +1,12 @@
 import React from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 import NewModal from "../NewModal";
 
 interface NewExperimentModalProps {
@@ -19,18 +27,44 @@ const NewExperimentModal = ({
         method: "POST",
         body: JSON.stringify({ name: name, description: description }),
       });
+      setIsCreateNew(true);
     } catch (error) {
       console.log(error);
     }
-    setIsCreateNew(true);
   };
+
   return (
-    <NewModal
-      isModalOpen={isModalOpen}
-      handleToggleModal={handleToggleModal}
-      handleCreate={createExperiment}
-      modalTitle={"Add a New Experiment"}
-    />
+    <Dialog open={isModalOpen} onClose={handleToggleModal} maxWidth="sm" fullWidth>
+      <DialogTitle>Add a New Experiment</DialogTitle>
+      <DialogContent>
+        <TextField
+          label="Experiment Name"
+          variant="outlined"
+          fullWidth
+          margin="dense"
+        />
+        <TextField
+          label="Description"
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={4}
+          margin="dense"
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleToggleModal} color="primary">
+          Cancel
+        </Button>
+        <Button
+          onClick={() => createExperiment("Experiment Name")} // You can replace "Experiment Name" with the actual name
+          color="primary"
+          variant="contained"
+        >
+          Create
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

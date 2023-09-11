@@ -7,6 +7,7 @@ import NewIterationModal from "@/components/Iteration/NewIterationModal";
 import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
+
 interface PageProps {
   params: {
     experimentName: string;
@@ -22,7 +23,7 @@ const Page = ({ params }: PageProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateNew, setIsCreateNew] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-
+    
   const handleVisualizationClick = () => {
     const visualizationPageUrl = `/experiments/${experimentName}/${bucketName}/visualization`;
     window.location.href = visualizationPageUrl;
@@ -126,3 +127,4 @@ const Page = ({ params }: PageProps) => {
 };
 
 export default Page;
+

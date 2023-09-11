@@ -107,10 +107,16 @@ const Page = ({ params }: PageProps) => {
           },
         ],
       };
+      console.log(updatedIteration);
+      setCompareFullIterations([...compareFullIterations, addedIteration]);
       setCompareIterations([...compareIterations, updatedIteration]);
       localStorage.setItem(
         "compareIterations",
         JSON.stringify([...compareIterations, updatedIteration])
+      );
+      localStorage.setItem(
+        "compareFullIterations",
+        JSON.stringify([...compareFullIterations, addedIteration])
       );
     }
   };
@@ -125,6 +131,7 @@ const Page = ({ params }: PageProps) => {
   };
 
   return (
+    
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
       <Box width="100%" paddingX={10}>
         <Box my={4} px={2}>
@@ -192,6 +199,7 @@ const Page = ({ params }: PageProps) => {
               {compareIterations.length > 0 && (
                 <CompareTable
                   iterations={compareIterations}
+                  fulliterations={compareFullIterations}
                   handleIterationDelete={handleIterationDelete}
                 />
               )}
