@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
+import { Card, CardContent, Typography } from "@mui/material";
 import ExperimentTable from "@/components/Experiment/ExperimentTable";
 import NewExperimentModal from "@/components/Experiment/NewExperimentModal";
 
@@ -18,6 +18,10 @@ const Page = () => {
   const handleDelete = () => {
     setIsDelete(!isDelete);
   };
+
+  const memoizedExperiments = useMemo(() => {
+    return experiments;
+  }, [experiments]);
 
   useEffect(() => {
     const fetchExperiments = async () => {
@@ -48,8 +52,8 @@ const Page = () => {
   }, [isCreateNew, isDelete]);
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
-      <Box width="100%" paddingX={10}>
+    <Card>
+      <CardContent>
         <Typography
           variant="h3"
           fontWeight="bold"
@@ -61,22 +65,18 @@ const Page = () => {
         >
           Experiments
         </Typography>
-      </Box>
-      <Box width="100%">
-        {/* <ExperimentTable rows={rows} /> */}
         <ExperimentTable
-          rows={experiments}
+          rows={memoizedExperiments}
           handleDelete={handleDelete}
           handleToggleModal={handleToggleModal}
         />
-      </Box>
-
-      <NewExperimentModal
-        isModalOpen={isModalOpen}
-        handleToggleModal={handleToggleModal}
-        setIsCreateNew={setIsCreateNew}
-      />
-    </Box>
+        <NewExperimentModal
+          isModalOpen={isModalOpen}
+          handleToggleModal={handleToggleModal}
+          setIsCreateNew={setIsCreateNew}
+        />
+      </CardContent>
+    </Card>
   );
 };
 

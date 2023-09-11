@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -43,10 +43,10 @@ interface CommandData {
 
 const Page = ({ params }: PageProps) => {
   const { experimentName, bucketName } = params;
-  const [iterationNames, setIterationNames] = useState([]);
-  const [iterationEnvironmentData, setIterationEnvironmentData] = useState([]);
+  const iterationNamesRef = useRef<string[]>([]);
+  const iterationEnvironmentDataRef = useRef<any[]>([]);
   const [commandNames, setCommandNames] = useState<string[]>([]);
-  const [commandDataArrays, setCommandDataArrays] = useState<CommandData[][]>([]);
+  const commandDataArraysRef = useRef<CommandData[][]>([]);
   const [currentFields, setCurrentFields] = useState<string[]>([]);
 
   const handleFieldChange = (index: number, newField: string) => {
@@ -103,8 +103,10 @@ const Page = ({ params }: PageProps) => {
             environmentData: iteration.output.EnvironmentData,
           };
         });
-        setIterationNames(transformedIterations.map((d: any) => d.name));
-        setIterationEnvironmentData(transformedIterations.map((d: any) => d.environmentData));
+        iterationNamesRef.current = transformedIterations.map((d: any) => d.name);
+        iterationEnvironmentDataRef.current = transformedIterations.map(
+          (d: any) => d.environmentData
+        );
       } catch (error) {
         console.error(error);
       }
@@ -116,7 +118,7 @@ const Page = ({ params }: PageProps) => {
   useEffect(() => {
     const getDataset = () => {
       const commandDataMap = new Map<string, any[]>();
-      iterationEnvironmentData.forEach((iterationData: any) => {
+      iterationEnvironmentDataRef.current.forEach((iterationData: any) => {
         iterationData.forEach((commandData: any) => {
           const commandName = commandData.command;
 
@@ -128,10 +130,12 @@ const Page = ({ params }: PageProps) => {
         });
       });
       setCommandNames(Array.from(commandDataMap.keys()) as string[]);
-      setCommandDataArrays(Array.from(commandDataMap.values()).filter(Boolean) as CommandData[][]);
+      commandDataArraysRef.current = Array.from(commandDataMap.values()).filter(
+        Boolean
+      ) as CommandData[][];
     };
     getDataset();
-  }, [iterationEnvironmentData]);
+  }, []);
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
@@ -150,7 +154,7 @@ const Page = ({ params }: PageProps) => {
             Visualization
           </Typography>
           <Box my={4}>
-            {commandDataArrays.map((commandData, index) => {
+            {commandDataArraysRef.current.map((commandData, index) => {
               const headers: string[] = [];
               commandData[0].record[0].fields.forEach((item: any) => {
                 if (typeof item.val === "number") {
@@ -165,7 +169,7 @@ const Page = ({ params }: PageProps) => {
                 ),
                 datasets: commandData.map((data, i) => {
                   return {
-                    label: iterationNames[i],
+                    label: iterationNamesRef.current[i],
                     data: data.record.map((item: any) => {
                       return item.fields.find((field: any) => field.header === currentFields[index])
                         ?.val;
