@@ -1,15 +1,7 @@
 "use client";
 
-import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -120,10 +112,10 @@ const Page = ({ params }: PageProps) => {
         console.error(error);
       }
     };
-    
+
     fetchIteration();
   }, [experimentName, bucketName]);
-  console.log(iterationEnvironmentData);
+
   useEffect(() => {
     const getDataset = () => {
       const commandDataMap = new Map<string, any[]>();
@@ -181,8 +173,9 @@ const Page = ({ params }: PageProps) => {
                     return {
                       label: iterationNamesRef.current[i],
                       data: data.record.map((item: any) => {
-                        return item.fields.find((field: any) => field.header === currentFields[index])
-                          ?.val;
+                        return item.fields.find(
+                          (field: any) => field.header === currentFields[index]
+                        )?.val;
                       }),
                     };
                   }),
