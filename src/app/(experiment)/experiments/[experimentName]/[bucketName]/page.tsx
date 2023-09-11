@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import IterationTable from "@/components/Iteration/IterationTable";
 import NewIterationModal from "@/components/Iteration/NewIterationModal";
@@ -23,15 +23,10 @@ const Page = ({ params }: PageProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateNew, setIsCreateNew] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-
-  
-
-  const handleVisualizationClick = () => {
     
+  const handleVisualizationClick = () => {
     const visualizationPageUrl = `/experiments/${experimentName}/${bucketName}/visualization`;
     window.location.href = visualizationPageUrl;
-
-    
   };
 
   const handleToggleModal = () => {
@@ -41,6 +36,10 @@ const Page = ({ params }: PageProps) => {
   const handleDelete = () => {
     setIsDelete(!isDelete);
   };
+
+  const memoizedIterations = useMemo(() => {
+    return iterations;
+  }, [iterations]);
 
   useEffect(() => {
     const fetchIteration = async () => {
@@ -78,7 +77,13 @@ const Page = ({ params }: PageProps) => {
   return (
     <Card>
       <CardContent>
-        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mx={4}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          mx={4}
+        >
           <Box width="100%" paddingX={10}>
             <Link href={`experiments/${experimentName}`}>
               <ArrowBackIcon />
@@ -99,7 +104,7 @@ const Page = ({ params }: PageProps) => {
             <IterationTable
               experimentName={experimentName}
               bucketName={bucketName}
-              rows={iterations}
+              rows={memoizedIterations}
               handleDelete={handleDelete}
               handleToggleModal={handleToggleModal}
             />
