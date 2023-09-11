@@ -1,20 +1,7 @@
-import {
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import { IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-  Button
-} from "@mui/material";
+import { Box, ToggleButton, ToggleButtonGroup, Typography, Button } from "@mui/material";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -27,14 +14,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip);
 
 function setChartOptions(title: string) {
   const options = {
@@ -67,7 +47,10 @@ interface Command {
   command: string;
   val: string;
 }
-interface FullIteration {}
+interface FullIteration {
+  name: string;
+  environmentData: any;
+}
 interface Iteration {
   bucket: string;
   iteration: string;
@@ -85,11 +68,7 @@ interface CommandData {
   record: { fields: DataPoint[]; timestamp: string }[];
 }
 
-const CompareTable = ({
-  iterations,
-  fulliterations,
-  handleIterationDelete,
-}: Props) => {
+const CompareTable = ({ iterations, fulliterations, handleIterationDelete }: Props) => {
   const headCellStyle = {
     fontWeight: "bold",
     backgroundColor: "#f2f2f2",
@@ -102,9 +81,7 @@ const CompareTable = ({
   const [iterationNames, setIterationNames] = useState([]);
   const [iterationEnvironmentData, setIterationEnvironmentData] = useState([]);
   const [commandNames, setCommandNames] = useState<string[]>([]);
-  const [commandDataArrays, setCommandDataArrays] = useState<CommandData[][]>(
-    []
-  );
+  const [commandDataArrays, setCommandDataArrays] = useState<CommandData[][]>([]);
   const [currentFields, setCurrentFields] = useState<string[]>([]);
   const handleFieldChange = (index: number, newField: string) => {
     setCurrentFields((prevFields) => {
@@ -121,9 +98,7 @@ const CompareTable = ({
       };
     });
     setIterationNames(transformedIterations.map((d: FullIteration) => d.name));
-    setIterationEnvironmentData(
-      transformedIterations.map((d: FullIteration) => d.environmentData)
-    );
+    setIterationEnvironmentData(transformedIterations.map((d: FullIteration) => d.environmentData));
   }, [fulliterations]);
   useEffect(() => {
     const getDataset = () => {
@@ -140,9 +115,7 @@ const CompareTable = ({
         });
       });
       setCommandNames(Array.from(commandDataMap.keys()) as string[]);
-      setCommandDataArrays(
-        Array.from(commandDataMap.values()).filter(Boolean) as CommandData[][]
-      );
+      setCommandDataArrays(Array.from(commandDataMap.values()).filter(Boolean) as CommandData[][]);
     };
     getDataset();
   }, [iterationEnvironmentData]);
@@ -281,8 +254,7 @@ const CompareTable = ({
                         label: iterationNames[i],
                         data: data.record.map((item: any) => {
                           return item.fields.find(
-                            (field: any) =>
-                              field.header === currentFields[index]
+                            (field: any) => field.header === currentFields[index]
                           )?.val;
                         }),
                       };
@@ -299,11 +271,7 @@ const CompareTable = ({
                       >
                         {commandData[0].command}
                       </Typography>
-                      <Typography
-                        fontSize="md"
-                        color="textSecondary"
-                        textAlign="left"
-                      >
+                      <Typography fontSize="md" color="textSecondary" textAlign="left">
                         Interval: {commandData[0].interval}
                       </Typography>
                       <Box display="flex" justifyContent="center" my={2}>
@@ -311,9 +279,7 @@ const CompareTable = ({
                           color="primary"
                           value={currentFields[index]}
                           exclusive
-                          onChange={(event, newField) =>
-                            handleFieldChange(index, newField)
-                          }
+                          onChange={(event, newField) => handleFieldChange(index, newField)}
                           aria-label="Platform"
                         >
                           {headers.map((header, i) => {
@@ -325,10 +291,7 @@ const CompareTable = ({
                           })}
                         </ToggleButtonGroup>
                       </Box>
-                      <Line
-                        options={setChartOptions(commandNames[index])}
-                        data={chartData}
-                      />
+                      <Line options={setChartOptions(commandNames[index])} data={chartData} />
                     </Box>
                   );
                 })}
@@ -338,14 +301,14 @@ const CompareTable = ({
         </Box>
       </>
       <div className="App">
-      <Button
-      variant="contained"
-      color="primary"
-      onClick={exportData}
-      sx={{ marginTop: 2 }} // Adjust the styling as needed
-    >
-      Export Data
-    </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={exportData}
+          sx={{ marginTop: 2 }} // Adjust the styling as needed
+        >
+          Export Data
+        </Button>
       </div>
     </>
   );

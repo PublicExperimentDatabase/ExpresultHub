@@ -16,3 +16,8 @@ interface ExperimentTableRow {
   lastModified: string;
   created: string;
 }
+
+interface DataPoint {
+  header: string;
+  val: number | string;
+}

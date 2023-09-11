@@ -97,18 +97,6 @@ const Page = ({ params }: PageProps) => {
   }, [experimentName, bucketName, iterationName]);
   console.log(environmentData);
 
-
-  const exportData = () => {
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(iteration)
-    )}`;
-    const link = document.createElement("a");
-    link.href = jsonString;
-    link.download = `${experimentName}_${bucketName}_${iterationName}.json`;
-
-    link.click();
-  };
-
   const exportData = () => {
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
       JSON.stringify(iteration)
@@ -130,23 +118,12 @@ const Page = ({ params }: PageProps) => {
                 <ArrowBackIcon />
               </IconButton>
             </Link>
-            <Typography
-              variant="h4"
-              fontWeight="bold"
-              color="primary"
-              textAlign="left"
-            >
+            <Typography variant="h4" fontWeight="bold" color="primary" textAlign="left">
               Name: {iterationName}
             </Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              color="textPrimary"
-              textAlign="left"
-              mb={1}
-            >
+            <Typography variant="h6" fontWeight="bold" color="textPrimary" textAlign="left" mb={1}>
               Start Time
             </Typography>
             <Typography variant="body1" fontSize="md" color="textSecondary" textAlign="left">
@@ -154,13 +131,7 @@ const Page = ({ params }: PageProps) => {
             </Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              color="textPrimary"
-              textAlign="left"
-              mb={1}
-            >
+            <Typography variant="h6" fontWeight="bold" color="textPrimary" textAlign="left" mb={1}>
               End Time
             </Typography>
             <Typography variant="body1" fontSize="md" color="textSecondary" textAlign="left">
@@ -168,13 +139,7 @@ const Page = ({ params }: PageProps) => {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography
-              variant="h5"
-              fontWeight="bold"
-              color="textPrimary"
-              textAlign="left"
-              mt={2}
-            >
+            <Typography variant="h5" fontWeight="bold" color="textPrimary" textAlign="left" mt={2}>
               Environment Data
             </Typography>
             {environmentData.map((data: any, index) => {
@@ -202,7 +167,6 @@ const Page = ({ params }: PageProps) => {
                     backgroundColor: "rgba(255, 99, 132, 0.5)",
                   },
                 ],
-                
               };
 
               return (
@@ -251,6 +215,3 @@ const Page = ({ params }: PageProps) => {
 };
 
 export default Page;
-
-
-
