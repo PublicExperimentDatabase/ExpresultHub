@@ -23,7 +23,7 @@ interface PageProps {
 
 const Page = ({ params }: PageProps) => {
   const { experimentName } = params;
-  const selectBucketRef = useRef<string>("");
+  const [selectBucket, setSelectBucket] = useState("");
   const [selectIteration, setSelectIteration] = useState("");
   const [buckets, setBuckets] = useState([]);
   const [iterations, setIterations] = useState([]);
@@ -60,10 +60,10 @@ const Page = ({ params }: PageProps) => {
 
   useEffect(() => {
     const fetchIteration = async () => {
-      if (!!selectBucketRef.current) {
+      if (!!selectBucket) {
         try {
           const response = await fetch(
-            `/api/experiments/${experimentName}/buckets/${selectBucketRef.current}/iterations`,
+            `/api/experiments/${experimentName}/buckets/${selectBucket}/iterations`,
             {
               method: "GET",
               headers: {
@@ -78,10 +78,11 @@ const Page = ({ params }: PageProps) => {
       }
     };
     fetchIteration();
-  }, [selectBucketRef, experimentName]);
+  }, [selectBucket, experimentName]);
 
   const handleBucketChange = (event: SelectChangeEvent) => {
-    selectBucketRef.current = event.target.value as string; // 更新 selectBucket 的引用值
+    setSelectBucket(event.target.value as string);
+    console.log(event.target.value);
   };
 
   const handleIterationChange = (event: SelectChangeEvent) => {
@@ -95,7 +96,7 @@ const Page = ({ params }: PageProps) => {
       console.log(addedIteration);
       const updatedIteration = {
         id: addedIteration._id,
-        bucket: selectBucketRef.current,
+        bucket: selectBucket,
         iteration: addedIteration.name,
         commands: [
           {
@@ -157,7 +158,7 @@ const Page = ({ params }: PageProps) => {
           >
             <FormControl sx={{ width: "35%" }}>
               <InputLabel>Bucket</InputLabel>
-              <Select value={selectBucketRef.current} label="Bucket" onChange={handleBucketChange}>
+              <Select value={selectBucket} label="Bucket" onChange={handleBucketChange}>
                 {buckets.map((bucket: any, index) => (
                   <MenuItem value={bucket.name} key={index}>
                     {bucket.name}
