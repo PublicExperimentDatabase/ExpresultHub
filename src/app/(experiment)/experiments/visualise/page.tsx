@@ -75,6 +75,7 @@ const FileVisualiser = () => {
         setIteration(data.files.file);
         setEnvironmentData(JSON.parse(data.files.file).environmentData);
         setTimestamp(JSON.parse(data.files.file).timestamp);
+        console.log(environmentData);
       } catch (error) {
         console.error(error);
       }
@@ -169,7 +170,7 @@ const FileVisualiser = () => {
           </Button>
         )}
       </Paper>
-      {iteration && (
+      {file && (
         <>
           <Box mt={4}>
             <Typography variant="h5" fontWeight="bold" color="textPrimary">
