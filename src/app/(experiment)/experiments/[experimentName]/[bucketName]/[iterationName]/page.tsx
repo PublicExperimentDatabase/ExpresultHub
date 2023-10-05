@@ -97,18 +97,6 @@ const Page = ({ params }: PageProps) => {
   }, [experimentName, bucketName, iterationName]);
   console.log(environmentData);
 
-
-  const exportData = () => {
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(iteration)
-    )}`;
-    const link = document.createElement("a");
-    link.href = jsonString;
-    link.download = `${experimentName}_${bucketName}_${iterationName}.json`;
-
-    link.click();
-  };
-
   const exportData = () => {
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
       JSON.stringify(iteration)

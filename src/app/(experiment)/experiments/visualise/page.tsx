@@ -75,7 +75,7 @@ const FileVisualiser = () => {
         setIteration(data.files.file);
         setEnvironmentData(JSON.parse(data.files.file).environmentData);
         setTimestamp(JSON.parse(data.files.file).timestamp);
-        console.log(environmentData);
+        
       } catch (error) {
         console.error(error);
       }
