@@ -95,6 +95,19 @@ const Page = ({ params }: PageProps) => {
     };
     fetchIteration();
   }, [experimentName, bucketName, iterationName]);
+  console.log(environmentData);
+
+
+  const exportData = () => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(iteration)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = `${experimentName}_${bucketName}_${iterationName}.json`;
+
+    link.click();
+  };
 
   const exportData = () => {
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
@@ -189,6 +202,7 @@ const Page = ({ params }: PageProps) => {
                     backgroundColor: "rgba(255, 99, 132, 0.5)",
                   },
                 ],
+                
               };
 
               return (
