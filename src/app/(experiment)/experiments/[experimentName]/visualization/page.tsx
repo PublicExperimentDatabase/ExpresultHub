@@ -23,7 +23,7 @@ interface PageProps {
 
 const Page = ({ params }: PageProps) => {
   const { experimentName } = params;
-  const [selectBucket, setSelectBucket] = useState("");
+  const selectBucketRef = useRef<string>("");
   const [selectIteration, setSelectIteration] = useState("");
   const [buckets, setBuckets] = useState([]);
   const [iterations, setIterations] = useState([]);
@@ -60,10 +60,10 @@ const Page = ({ params }: PageProps) => {
 
   useEffect(() => {
     const fetchIteration = async () => {
-      if (!!selectBucket) {
+      if (!!selectBucketRef.current) {
         try {
           const response = await fetch(
-            `/api/experiments/${experimentName}/buckets/${selectBucket}/iterations`,
+            `/api/experiments/${experimentName}/buckets/${selectBucketRef.current}/iterations`,
             {
               method: "GET",
               headers: {
@@ -158,7 +158,7 @@ const Page = ({ params }: PageProps) => {
           >
             <FormControl sx={{ width: "35%" }}>
               <InputLabel>Bucket</InputLabel>
-              <Select value={selectBucket} label="Bucket" onChange={handleBucketChange}>
+              <Select value={selectBucketRef.current} label="Bucket" onChange={handleBucketChange}>
                 {buckets.map((bucket: any, index) => (
                   <MenuItem value={bucket.name} key={index}>
                     {bucket.name}

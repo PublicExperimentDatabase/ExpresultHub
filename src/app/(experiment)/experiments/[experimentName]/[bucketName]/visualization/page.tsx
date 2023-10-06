@@ -120,10 +120,10 @@ const Page = ({ params }: PageProps) => {
         console.error(error);
       }
     };
-    
+
     fetchIteration();
   }, [experimentName, bucketName]);
-  console.log(iterationEnvironmentData);
+
   useEffect(() => {
     const getDataset = () => {
       const commandDataMap = new Map<string, any[]>();
@@ -181,8 +181,9 @@ const Page = ({ params }: PageProps) => {
                     return {
                       label: iterationNamesRef.current[i],
                       data: data.record.map((item: any) => {
-                        return item.fields.find((field: any) => field.header === currentFields[index])
-                          ?.val;
+                        return item.fields.find(
+                          (field: any) => field.header === currentFields[index]
+                        )?.val;
                       }),
                     };
                   }),
