@@ -78,10 +78,11 @@ const Page = ({ params }: PageProps) => {
       }
     };
     fetchIteration();
-  }, [selectBucketRef, experimentName]);
+  }, [selectBucket, experimentName]);
 
   const handleBucketChange = (event: SelectChangeEvent) => {
-    selectBucketRef.current = event.target.value as string; // 更新 selectBucket 的引用值
+    setSelectBucket(event.target.value as string);
+    console.log(event.target.value);
   };
 
   const handleIterationChange = (event: SelectChangeEvent) => {
@@ -95,7 +96,7 @@ const Page = ({ params }: PageProps) => {
       console.log(addedIteration);
       const updatedIteration = {
         id: addedIteration._id,
-        bucket: selectBucketRef.current,
+        bucket: selectBucket,
         iteration: addedIteration.name,
         commands: [
           {
