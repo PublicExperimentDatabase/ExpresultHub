@@ -3,12 +3,8 @@
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Box,
   Card,
   CardContent,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
 } from "@mui/material";
 import {
   Chart as ChartJS,
