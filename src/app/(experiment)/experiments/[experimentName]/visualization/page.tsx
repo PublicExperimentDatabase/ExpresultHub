@@ -26,6 +26,7 @@ const Page = ({ params }: PageProps) => {
   const selectBucketRef = useRef<string>("");
   const [selectIteration, setSelectIteration] = useState("");
   const [buckets, setBuckets] = useState([]);
+  const [selectBucket, setSelectBucket] = useState("");
   const [iterations, setIterations] = useState([]);
   const [compareIterations, setCompareIterations] = useState<any[]>([]);
   const [compareFullIterations, setCompareFullIterations] = useState<any[]>([]);
@@ -60,10 +61,10 @@ const Page = ({ params }: PageProps) => {
 
   useEffect(() => {
     const fetchIteration = async () => {
-      if (!!selectBucketRef.current) {
+      if (!selectBucketRef.current) {
         try {
           const response = await fetch(
-            `/api/experiments/${experimentName}/buckets/${selectBucketRef.current}/iterations`,
+            `/api/experiments/${experimentName}/buckets/${selectBucket}/iterations`,
             {
               method: "GET",
               headers: {
@@ -78,7 +79,8 @@ const Page = ({ params }: PageProps) => {
       }
     };
     fetchIteration();
-  }, [selectBucket, experimentName]);
+    console.log(iterations);
+  }, [selectBucket, experimentName, iterations]);
 
   const handleBucketChange = (event: SelectChangeEvent) => {
     setSelectBucket(event.target.value as string);
@@ -87,6 +89,7 @@ const Page = ({ params }: PageProps) => {
 
   const handleIterationChange = (event: SelectChangeEvent) => {
     setSelectIteration(event.target.value as string);
+    console.log(event.target.value);
   };
   const handleIterationAdd = () => {
     const addedIteration = iterations.find(
@@ -158,7 +161,7 @@ const Page = ({ params }: PageProps) => {
           >
             <FormControl sx={{ width: "35%" }}>
               <InputLabel>Bucket</InputLabel>
-              <Select value={selectBucketRef.current} label="Bucket" onChange={handleBucketChange}>
+              <Select value={selectBucket} label="Bucket" onChange={handleBucketChange}>
                 {buckets.map((bucket: any, index) => (
                   <MenuItem value={bucket.name} key={index}>
                     {bucket.name}
