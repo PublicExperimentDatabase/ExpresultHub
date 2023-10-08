@@ -1,15 +1,7 @@
 "use client";
 
-import { Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Card, CardContent, Box, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -123,7 +115,6 @@ const Page = ({ params }: PageProps) => {
 
     fetchIteration();
   }, [experimentName, bucketName]);
-
   useEffect(() => {
     const getDataset = () => {
       const commandDataMap = new Map<string, any[]>();
