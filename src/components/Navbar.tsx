@@ -17,7 +17,7 @@ const Navbar = () => {
         <div style={{marginLeft:"75%"}}>
           <Button color="inherit" href="/experiments">Home</Button>
           <Button color="inherit" href="/experiments/visualise">Visualise</Button>
-          <Button color="inherit">About</Button>
+          <Button color="inherit" href="/about">About</Button>
           
         </div>
       </Toolbar>
